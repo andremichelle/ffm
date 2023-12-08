@@ -4,6 +4,7 @@ import { int, KeyValuePair, unitValue } from "./common/lang.ts"
 import "./App.sass"
 import { Progress } from "./Progress.tsx"
 import { Header } from "./Header.tsx"
+import { FileSource } from "./common/FileSource.tsx"
 
 const App = () => {
     const [ffmpeg, setFfmpeg] = useState<FFmpegWorker | unitValue>(0.0)
@@ -40,34 +41,12 @@ const App = () => {
         <>
             <h1>Quickly Convert Any Audio File To Wav</h1>
             <Header progress={ffmpegLoaded ? 1.0 : ffmpeg} />
-            <fieldset disabled={!ffmpegLoaded || typeof conversationState === "number"}>
-                <label className="file"
-                       onDragOver={event => {
-                           event.currentTarget.classList.add("dragover")
-                           event.preventDefault()
-                       }}
-                       onDragLeave={(event: React.DragEvent<HTMLLabelElement>) => {
-                           event.currentTarget.classList.remove("dragover")
-                       }}
-                       onDrop={event => {
-                           event.preventDefault()
-                           event.currentTarget.classList.remove("dragover")
-                           setConversationState(0.0)
-                           setFiles([...event.dataTransfer.files])
-                       }}>
-                    <input type="file"
-                           multiple={false}
-                           onClick={(event) => {
-                               // resets internal input state to force change event
-                               event.currentTarget.value = ""
-                           }}
-                           onChange={(event) => {
-                               setConversationState(0.0)
-                               setFiles([...event.currentTarget.files ?? []])
-                           }} />
-                    Drop file here or click to browse
-                </label>
-            </fieldset>
+            <FileSource
+                disabled={!ffmpegLoaded || typeof conversationState === "number"}
+                onChanged={files => {
+                    setConversationState(0.0)
+                    setFiles(files)
+                }} />
             {(() => {
                 if (typeof conversationState === "string") {
                     return <div className="error">{conversationState}</div>
