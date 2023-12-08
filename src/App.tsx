@@ -39,10 +39,13 @@ const App = () => {
     return (
         <>
             <header>
-                <div>FFMPEG</div>
-                <img src="ffmpeg.wasm.png" alt="logo" />
-                <Progress value={ffmpegLoadingProgress} />
+                <div>
+                    <div>FFMPEG</div>
+                    <img src="ffmpeg.wasm.png" alt="logo" />
+                    <Progress className={ffmpeg === null ? "blink" : ""} value={ffmpegLoadingProgress} />
+                </div>
             </header>
+            <h1>Quickly Convert Any Audio File To Wav</h1>
             <label htmlFor="myfile" />
             <input type="file" id="myfile" name="myfile" multiple={true} onChange={handleChange}
                    disabled={ffmpeg === null} />

@@ -1,17 +1,26 @@
 @import ./common
 
+@keyframes blink
+  from
+    background-color: $COLOR_FFMPEG
+  to
+    background-color: lighten($COLOR_FFMPEG, 10%)
+
 .progress
   --value: 0.0
 
   width: 100%
   height: 0.5em
   border-radius: 0.5em
-  border: 1px $color solid
-  background-color: rgba($color, 0.1)
+  border: 1px $COLOR_FFMPEG solid
+  background-color: rgba($COLOR_FFMPEG, 0.1)
+
+  &.blink > div
+    animation: blink alternate ease-in infinite 75ms
 
   > div
     margin: 1px
-    background-color: $color
+    background-color: $COLOR_FFMPEG
     border-radius: calc(0.5em - 1px)
     width: calc(var(--value) * 100% - 2px)
     height: calc(100% - 2px)
