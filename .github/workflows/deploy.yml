@@ -5,6 +5,8 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
+      - name: Build
+        run: npm run build
       - uses: actions/checkout@v2
       - name: Upload ftp
         uses: sebastianpopp/ftp-action@releases/v2
