@@ -7,7 +7,7 @@ export type int = number
 export type float = number
 export type double = number
 export type long = bigint
-export type unitValue = number // 0...1
+export type unitValue = number // [0...1]
 
 export type NumberArray =
     ReadonlyArray<number>

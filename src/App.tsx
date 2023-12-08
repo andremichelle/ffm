@@ -3,6 +3,7 @@ import { FFmpegWorker, FileConversionResult } from "./common/ffmepg.ts"
 import { int, KeyValuePair, unitValue } from "./common/lang.ts"
 import "./App.sass"
 import { Progress } from "./Progress.tsx"
+import { Header } from "./Header.tsx"
 
 const App = () => {
     const [ffmpeg, setFfmpeg] = useState<FFmpegWorker | unitValue>(0.0)
@@ -36,19 +37,20 @@ const App = () => {
 
     return (
         <>
-            <header>
-                <div>
-                    <div>ffmpeg</div>
-                    <img src="ffmpeg.wasm.png" alt="logo" />
-                    <Progress className={ffmpegLoaded ? "" : "blink"} value={ffmpegLoaded ? 1.0 : ffmpeg} />
-                </div>
-            </header>
             <h1>Quickly Convert Any Audio File To Wav</h1>
+            <Header progress={ffmpegLoaded ? 1.0 : ffmpeg} />
             <fieldset disabled={!ffmpegLoaded || typeof conversationState === "number"}>
                 <label className="file"
-                       onDragOver={event => event.preventDefault()}
+                       onDragOver={event => {
+                           event.currentTarget.classList.add("dragover")
+                           event.preventDefault()
+                       }}
+                       onDragLeave={(event: React.DragEvent<HTMLLabelElement>) => {
+                           event.currentTarget.classList.remove("dragover")
+                       }}
                        onDrop={event => {
                            event.preventDefault()
+                           event.currentTarget.classList.remove("dragover")
                            setConversationState(0.0)
                            setFiles([...event.dataTransfer.files])
                        }}>
@@ -77,7 +79,7 @@ const App = () => {
                         return path.substring(0, path.lastIndexOf("."))
                     })()
                     return (
-                        <div>
+                        <>
                             <div className="file-info">{
                                 conversationState.meta_data.map((pair: KeyValuePair, index: int) =>
                                     <React.Fragment key={pair.key + index}>
@@ -86,9 +88,8 @@ const App = () => {
                                     </React.Fragment>)}
                             </div>
                             <audio controls src={objectURL}></audio>
-                            <br />
-                            <a href={objectURL} download={`${fileName}.wav`}>{`Download ${fileName}.wav`}</a>
-                        </div>
+                            <div>Download <a href={objectURL} download={`${fileName}.wav`}>{`${fileName}.wav`}</a></div>
+                        </>
                     )
                 }
             })()}

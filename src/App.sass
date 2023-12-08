@@ -3,7 +3,7 @@
 @keyframes intro
   from
     opacity: 0.0
-    transform: translateZ(-1000px) rotateY(-180deg)
+    transform: translateZ(-1000px) rotateY(-225deg)
   to
     opacity: 1.0
     transform: translateZ(0) rotateY(-22.5deg)
@@ -39,9 +39,10 @@ header
 h1
   margin: 0
   padding: 0
-  width: 12em
+  white-space: nowrap
   text-align: center
   color: $COLOR_FFMPEG
+  font-size: 1.5em
   text-shadow: 0 0 1em rgba($COLOR_FFMPEG, 0.25)
 
 fieldset
@@ -63,11 +64,11 @@ fieldset
     align-items: center
     justify-content: center
     user-select: none
-    transition: all 250ms
+    transition: all 200ms ease-in
 
-    &:active
-      color: lighten($COLOR_FFMPEG, 20%)
-      border: 0.25em lighten($COLOR_FFMPEG, 20%) dashed
+    &:active, &.dragover
+      color: lighten($COLOR_FFMPEG, 25%)
+      border: 0.25em lighten($COLOR_FFMPEG, 25%) dashed
 
     > input
       display: none
@@ -88,8 +89,8 @@ div.error
     color: white
 
     &:nth-child(2n+1)
-      color: gray
+      color: $COLOR_FFMPEG
       text-align: right
 
-progress, audio
+audio
   display: block
