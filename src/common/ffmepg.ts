@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import { FFmpeg } from "@ffmpeg/ffmpeg"
 import { fetchFile, toBlobURL } from "@ffmpeg/util"
 import { LogEvent } from "@ffmpeg/ffmpeg/dist/esm/types"
@@ -10,10 +12,6 @@ import { Lazy } from "./decorators"
 import { Terminable } from "./terminable.ts"
 
 export type FileConversionResult = { file_data: Uint8Array, meta_data: Array<KeyValuePair> }
-
-const IgnoredKeys: ReadonlyArray<string> = [
-    "major_brand", "minor_version", "compatible_brands", "iTunSMPB", "vendor_id", "language"
-] as const
 
 export class FFmpegWorker implements Terminable {
     static #log: Array<string> = []
@@ -86,9 +84,7 @@ export class FFmpegWorker implements Terminable {
     terminate(): void {this.#ffmpeg.terminate()}
 
     #parseMetaData(raw: Uint8Array): Array<KeyValuePair> {
-        const string = new TextDecoder().decode(raw)
-        console.log(string)
-        return string
+        return new TextDecoder().decode(raw)
             .split("\n")
             .map(line => {
                 const separatorIndex = line.indexOf("=")
@@ -96,7 +92,7 @@ export class FFmpegWorker implements Terminable {
                 const value = line.substring(separatorIndex + 1).trim()
                 return ({ key, value })
             })
-            .filter(({ key, value }) => key !== "" && value !== "" && !IgnoredKeys.includes(key))
+            .filter(({ key, value }) => key !== "" && value !== "" && !IgnoreKeys.includes(key))
     }
 }
 
@@ -134,3 +130,8 @@ class Loader {
         })
     }
 }
+
+// ffmpeg has terrible meta_data formatting and also outputs less interesting values
+const IgnoreKeys: ReadonlyArray<string> = [
+    "major_brand", "minor_version", "compatible_brands", "iTunSMPB", "vendor_id", "language"
+] as const

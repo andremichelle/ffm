@@ -28,6 +28,7 @@ const App = () => {
                     result = await ffmpeg.convert(files[0], progress => setConversationState(progress))
                 } catch (reason) {
                     setConversationState(`Unrecognised audio format (${files[0].name})`)
+                    setFiles([])
                     return
                 }
                 setConversationState(result)
@@ -56,20 +57,25 @@ const App = () => {
                        }}>
                     <input type="file"
                            multiple={false}
+                           onClick={(event) => {
+                               // resets internal input state to force change event
+                               event.currentTarget.value = ""
+                           }}
                            onChange={(event) => {
                                setConversationState(0.0)
-                               setFiles([...event.target.files ?? []])
+                               setFiles([...event.currentTarget.files ?? []])
                            }} />
                     Drop file here or click to browse
                 </label>
             </fieldset>
             {(() => {
-                if (!ffmpegLoaded || files.length === 0) {
-                    return
-                } else if (typeof conversationState === "string") {
+                if (typeof conversationState === "string") {
                     return <div className="error">{conversationState}</div>
                 } else if (typeof conversationState === "number") {
                     return <Progress value={conversationState}></Progress>
+                } else if (!ffmpegLoaded || files.length === 0) {
+                    // Idle. Waiting for input...
+                    return
                 } else {
                     // we have a valid wav-file...
                     //
@@ -88,7 +94,10 @@ const App = () => {
                                     </React.Fragment>)}
                             </div>
                             <audio controls src={objectURL}></audio>
-                            <div>Download <a href={objectURL} download={`${fileName}.wav`}>{`${fileName}.wav`}</a></div>
+                            <div className="download">
+                                <span>Download</span>
+                                <a href={objectURL} download={`${fileName}.wav`}>{`${fileName}.wav`}</a>
+                            </div>
                         </>
                     )
                 }
