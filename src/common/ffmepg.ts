@@ -7,56 +7,67 @@ import { KeyValuePair, Nullable, unitValue } from "./lang"
 import { Progress, ProgressHandler, SilentProgressHandler } from "./progress"
 import { Notifier } from "./observers"
 import { Lazy } from "./decorators"
+import { Terminable } from "./terminable.ts"
 
 export type FileConversionResult = { file_data: Uint8Array, meta_data: Array<KeyValuePair> }
 
-export class FFmpegWorker {
+const IgnoredKeys: ReadonlyArray<string> = [
+    "major_brand", "minor_version", "compatible_brands", "iTunSMPB", "vendor_id", "language"
+] as const
+
+export class FFmpegWorker implements Terminable {
     static #log: Array<string> = []
 
     static async preload(progress: ProgressHandler = SilentProgressHandler): Promise<FFmpegWorker> {
         return Loader.loadAndAttach(progress)
     }
 
-    constructor(readonly ffmpeg: FFmpeg) {
-        ffmpeg.on("log", ({ message }: LogEvent) => FFmpegWorker.#log.push(message))
-        ffmpeg.on("progress", event => {console.debug(event.progress)})
-    }
-
     static clearLogs(): void {Arrays.clear(FFmpegWorker.#log)}
     static consumeLogs(): Array<string> {return FFmpegWorker.#log.splice(0, FFmpegWorker.#log.length)}
 
-    get loaded(): boolean {return this.ffmpeg.loaded}
+    readonly #ffmpeg: FFmpeg
+    readonly #progressNotifier: Notifier<unitValue>
+
+    constructor(ffmpeg: FFmpeg) {
+        this.#ffmpeg = ffmpeg
+        this.#progressNotifier = new Notifier<unitValue>()
+
+        this.#ffmpeg.on("log", ({ message }: LogEvent) => FFmpegWorker.#log.push(message))
+        this.#ffmpeg.on("progress", event => this.#progressNotifier.notify(event.progress))
+    }
+
+    get loaded(): boolean {return this.#ffmpeg.loaded}
 
     async info(file: string | File | Blob): Promise<string> {
         try {
-            await this.ffmpeg.writeFile("temp", await fetchFile(file))
-            await this.ffmpeg.exec(["-y", "-i", "temp", "-map", "a", "-c", "copy", "-f", "ffmetadata", "metadata.txt"])
-            const data = await this.ffmpeg.readFile("metadata.txt")
-            await this.ffmpeg.deleteFile("metadata.txt")
+            await this.#ffmpeg.writeFile("temp", await fetchFile(file))
+            await this.#ffmpeg.exec(["-y", "-i", "temp", "-map", "a", "-c", "copy", "-f", "ffmetadata", "metadata.txt"])
+            const data = await this.#ffmpeg.readFile("metadata.txt")
+            await this.#ffmpeg.deleteFile("metadata.txt")
             return typeof data === "string" ? data : new TextDecoder().decode(data)
         } catch (reason) {
             console.warn(reason)
             return Promise.reject(reason)
         } finally {
-            await this.ffmpeg.deleteFile("temp")
+            await this.#ffmpeg.deleteFile("temp")
         }
     }
 
-    async convert(file: string | File | Blob): Promise<FileConversionResult> {
+    async convert(file: string | File | Blob, progressHandler: ProgressHandler = SilentProgressHandler): Promise<FileConversionResult> {
+        const subscription = this.#progressNotifier.subscribe(progressHandler)
         try {
-            await this.ffmpeg.writeFile("temp.raw", await fetchFile(file))
-            console.log("exec")
-            await this.ffmpeg.exec([
+            await this.#ffmpeg.writeFile("temp.raw", await fetchFile(file))
+            await this.#ffmpeg.exec([
                 "-y",
                 "-i", "temp.raw",
                 "-map", "0", "-c", "copy", "-f", "ffmetadata", "metadata.txt",
                 "-map", "0:a", "-vn", "-ar", "44100", "-ac", "2", "-b:a", "192k", "output.wav"
             ])
-            const meta_data: Uint8Array | string = await this.ffmpeg.readFile("metadata.txt")
+            const meta_data: Uint8Array | string = await this.#ffmpeg.readFile("metadata.txt")
             if (typeof meta_data === "string") {
                 return Promise.reject(meta_data)
             }
-            const file_data: Uint8Array | string = await this.ffmpeg.readFile("output.wav")
+            const file_data: Uint8Array | string = await this.#ffmpeg.readFile("output.wav")
             if (typeof file_data === "string") {
                 return Promise.reject(file_data)
             }
@@ -65,11 +76,14 @@ export class FFmpegWorker {
             console.warn(reason)
             return Promise.reject(reason)
         } finally {
-            await this.ffmpeg.deleteFile("temp.raw")
-            await this.ffmpeg.deleteFile("output.wav")
-            await this.ffmpeg.deleteFile("metadata.txt")
+            subscription.terminate()
+            await this.#ffmpeg.deleteFile("temp.raw")
+            await this.#ffmpeg.deleteFile("output.wav")
+            await this.#ffmpeg.deleteFile("metadata.txt")
         }
     }
+
+    terminate(): void {this.#ffmpeg.terminate()}
 
     #parseMetaData(raw: Uint8Array): Array<KeyValuePair> {
         const string = new TextDecoder().decode(raw)
@@ -80,11 +94,9 @@ export class FFmpegWorker {
                 const separatorIndex = line.indexOf("=")
                 const key = line.substring(0, separatorIndex).trim()
                 const value = line.substring(separatorIndex + 1).trim()
-                console.log(">", line, "<")
-                console.log(`key: '${key}', value: '${value}'`)
                 return ({ key, value })
             })
-            .filter(({ key, value }) => key !== "" && value !== "")
+            .filter(({ key, value }) => key !== "" && value !== "" && !IgnoredKeys.includes(key))
     }
 }
 
