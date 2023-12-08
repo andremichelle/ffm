@@ -1,34 +1,32 @@
-import React, { ChangeEvent, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { FFmpegWorker, FileConversionResult } from "./common/ffmepg.ts"
-import { int, KeyValuePair, Nullable, unitValue } from "./common/lang.ts"
+import { int, KeyValuePair, unitValue } from "./common/lang.ts"
 import "./App.sass"
 import { Progress } from "./Progress.tsx"
 
 const App = () => {
-    const [ffmpeg, setFfmpeg] = useState<Nullable<FFmpegWorker>>(null)
-    const [ffmpegLoadingProgress, setFfmpegLoadingProgress] = useState(0.0)
+    const [ffmpeg, setFfmpeg] = useState<FFmpegWorker | unitValue>(0.0)
 
     const [files, setFiles] = useState<ReadonlyArray<File>>([])
-    const [conversationState, setConversationState] = useState<FileConversionResult | unitValue | string>("N/A")
+    const [conversationState, setConversationState] = useState<FileConversionResult | unitValue | string>("")
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setConversationState("processing...")
-        setFiles([...event.target.files ?? []])
-    }
+    const ffmpegLoaded = ffmpeg instanceof FFmpegWorker
 
     useEffect(() => {
-        (async () => setFfmpeg(await FFmpegWorker.preload(progress => setFfmpegLoadingProgress(progress))))()
-        return () => ffmpeg?.terminate()
+        (async () => setFfmpeg(await FFmpegWorker.preload(progress => setFfmpeg(progress))))()
+        return () => {
+            if (ffmpegLoaded) {ffmpeg.terminate()}
+        }
     }, [])
 
     useEffect(() => {
-        if (ffmpeg !== null && files.length > 0) {
+        if (ffmpegLoaded && files.length > 0) {
             (async () => {
                 let result: FileConversionResult
                 try {
                     result = await ffmpeg.convert(files[0], progress => setConversationState(progress))
                 } catch (reason) {
-                    setConversationState("Unrecognised audio format")
+                    setConversationState(`Unrecognised audio format (${files[0].name})`)
                     return
                 }
                 setConversationState(result)
@@ -40,47 +38,59 @@ const App = () => {
         <>
             <header>
                 <div>
-                    <div>FFMPEG</div>
+                    <div>ffmpeg</div>
                     <img src="ffmpeg.wasm.png" alt="logo" />
-                    <Progress className={ffmpeg === null ? "blink" : ""} value={ffmpegLoadingProgress} />
+                    <Progress className={ffmpegLoaded ? "" : "blink"} value={ffmpegLoaded ? 1.0 : ffmpeg} />
                 </div>
             </header>
             <h1>Quickly Convert Any Audio File To Wav</h1>
-            <label htmlFor="myfile" />
-            <input type="file" id="myfile" name="myfile" multiple={true} onChange={handleChange}
-                   disabled={ffmpeg === null} />
+            <fieldset disabled={!ffmpegLoaded || typeof conversationState === "number"}>
+                <label className="file"
+                       onDragOver={event => event.preventDefault()}
+                       onDrop={event => {
+                           event.preventDefault()
+                           setConversationState(0.0)
+                           setFiles([...event.dataTransfer.files])
+                       }}>
+                    <input type="file"
+                           multiple={false}
+                           onChange={(event) => {
+                               setConversationState(0.0)
+                               setFiles([...event.target.files ?? []])
+                           }} />
+                    Drop file here or click to browse
+                </label>
+            </fieldset>
             {(() => {
-                if (ffmpeg === null) {
-                    return <p>waiting for ffmpeg</p>
-                }
-                if (files.length === 0) {
-                    return <p>Please select a file</p>
-                }
-                if (typeof conversationState === "string") {
-                    return <div>Conversation Result: {conversationState}</div>
-                }
-                if (typeof conversationState === "number") {
-                    return <progress value={conversationState} max={1.0}></progress>
-                }
-                const objectURL = URL.createObjectURL(new Blob([conversationState.file_data], { type: "audio/wav" }))
-                const fileName = (() => {
-                    const path = files[0].name
-                    return path.substring(0, path.lastIndexOf("."))
-                })()
-                return (
-                    <div>
-                        <div className="file-info">{
-                            conversationState.meta_data.map((pair: KeyValuePair, index: int) =>
-                                <React.Fragment key={pair.key + index}>
-                                    <span>{pair.key}</span>
-                                    <span>{pair.value}</span>
-                                </React.Fragment>)}
+                if (!ffmpegLoaded || files.length === 0) {
+                    return
+                } else if (typeof conversationState === "string") {
+                    return <div className="error">{conversationState}</div>
+                } else if (typeof conversationState === "number") {
+                    return <Progress value={conversationState}></Progress>
+                } else {
+                    // we have a valid wav-file...
+                    //
+                    const objectURL = URL.createObjectURL(new Blob([conversationState.file_data], { type: "audio/wav" }))
+                    const fileName = (() => {
+                        const path = files[0].name
+                        return path.substring(0, path.lastIndexOf("."))
+                    })()
+                    return (
+                        <div>
+                            <div className="file-info">{
+                                conversationState.meta_data.map((pair: KeyValuePair, index: int) =>
+                                    <React.Fragment key={pair.key + index}>
+                                        <span>{pair.key}</span>
+                                        <span>{pair.value}</span>
+                                    </React.Fragment>)}
+                            </div>
+                            <audio controls src={objectURL}></audio>
+                            <br />
+                            <a href={objectURL} download={`${fileName}.wav`}>{`Download ${fileName}.wav`}</a>
                         </div>
-                        <audio controls src={objectURL}></audio>
-                        <br />
-                        <a href={objectURL} download={`${fileName}.wav`}>{`Download ${fileName}.wav`}</a>
-                    </div>
-                )
+                    )
+                }
             })()}
         </>
     )

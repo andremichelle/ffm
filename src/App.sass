@@ -3,7 +3,7 @@
 @keyframes intro
   from
     opacity: 0.0
-    transform: translateZ(-1000px) rotateY(-450deg)
+    transform: translateZ(-1000px) rotateY(-180deg)
   to
     opacity: 1.0
     transform: translateZ(0) rotateY(-22.5deg)
@@ -14,7 +14,7 @@
   padding: 3em
   display: flex
   flex-direction: column
-  row-gap: 0.5em
+  row-gap: 1em
   align-items: center
 
 header
@@ -37,10 +37,44 @@ header
       width: 100%
 
 h1
+  margin: 0
+  padding: 0
   width: 12em
   text-align: center
   color: $COLOR_FFMPEG
   text-shadow: 0 0 1em rgba($COLOR_FFMPEG, 0.25)
+
+fieldset
+  border: none
+  outline: none
+  color: $COLOR_FFMPEG
+  transition: opacity 500ms
+
+  &:disabled
+    opacity: 0.25
+    pointer-events: none
+
+  label.file
+    width: 16em
+    height: 4em
+    border: 0.25em $COLOR_FFMPEG dashed
+    border-radius: 1em
+    display: flex
+    align-items: center
+    justify-content: center
+    user-select: none
+    transition: all 250ms
+
+    &:active
+      color: lighten($COLOR_FFMPEG, 20%)
+      border: 0.25em lighten($COLOR_FFMPEG, 20%) dashed
+
+    > input
+      display: none
+
+div.error
+  color: orange
+  font-size: 0.75em
 
 .file-info
   display: grid
