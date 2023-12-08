@@ -1,0 +1,23 @@
+#root
+  max-width: 1280px
+  margin: 0 auto
+  padding: 2rem
+  text-align: center
+
+progress
+  display: block
+
+.file-info
+  display: grid
+  grid-template-columns: repeat(2, 1fr)
+  column-gap: 1em
+  font-size: 10px
+
+  > span
+    text-align: left
+    white-space: nowrap
+    color: white
+
+    &:nth-child(2n+1)
+      color: gray
+      text-align: right
