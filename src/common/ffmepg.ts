@@ -36,21 +36,6 @@ export class FFmpegWorker implements Terminable {
 
     get loaded(): boolean {return this.#ffmpeg.loaded}
 
-    async info(file: string | File | Blob): Promise<string> {
-        try {
-            await this.#ffmpeg.writeFile("temp", await fetchFile(file))
-            await this.#ffmpeg.exec(["-y", "-i", "temp", "-map", "a", "-c", "copy", "-f", "ffmetadata", "metadata.txt"])
-            const data = await this.#ffmpeg.readFile("metadata.txt")
-            await this.#ffmpeg.deleteFile("metadata.txt")
-            return typeof data === "string" ? data : new TextDecoder().decode(data)
-        } catch (reason) {
-            console.warn(reason)
-            return Promise.reject(reason)
-        } finally {
-            await this.#ffmpeg.deleteFile("temp")
-        }
-    }
-
     async convert(file: string | File | Blob, progressHandler: ProgressHandler = SilentProgressHandler): Promise<FileConversionResult> {
         const subscription = this.#progressNotifier.subscribe(progressHandler)
         try {
@@ -58,8 +43,8 @@ export class FFmpegWorker implements Terminable {
             await this.#ffmpeg.exec([
                 "-y",
                 "-i", "temp.raw",
-                "-map", "0", "-c", "copy", "-f", "ffmetadata", "metadata.txt",
-                "-map", "0:a", "-vn", "-ar", "44100", "-ac", "2", "-b:a", "192k", "output.wav"
+                "-f", "ffmetadata", "metadata.txt",
+                "-vn", "-ar", "44100", "-ac", "2", "-b:a", "192k", "output.wav"
             ])
             const meta_data: Uint8Array | string = await this.#ffmpeg.readFile("metadata.txt")
             if (typeof meta_data === "string") {
@@ -133,5 +118,5 @@ class Loader {
 
 // ffmpeg has terrible meta_data formatting and also outputs less interesting values
 const IgnoreKeys: ReadonlyArray<string> = [
-    "major_brand", "minor_version", "compatible_brands", "iTunSMPB", "vendor_id", "language"
+    "major_brand", "minor_version", "compatible_brands", "iTunSMPB", "vendor_id", "language", "umid"
 ] as const
