@@ -1,6 +1,7 @@
-import { int, KeyValuePair } from "./common/lang.ts"
+import "./ConversionResult.sass"
 import React from "react"
-import { FileConversionResult } from "./common/ffmepg.ts"
+import { int, KeyValuePair } from "../common/lang"
+import { FileConversionResult } from "../common/ffmepg"
 
 type ConversationResultProps = {
     name: string

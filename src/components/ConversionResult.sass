@@ -1,0 +1,38 @@
+@import ../common
+
+div.file-info
+  min-width: 100%
+  max-width: 100%
+  overflow: hidden auto
+  text-overflow: ellipsis
+  display: grid
+  grid-template-columns: repeat(2, 1fr)
+  column-gap: 1em
+  font-size: 10px
+
+  > span
+    text-align: left
+    white-space: nowrap
+    color: white
+
+    &:nth-child(2n+1)
+      color: $COLOR_FFMPEG
+      text-align: right
+
+div.download
+  display: flex
+  align-items: center
+  column-gap: 0.5em
+  line-height: 1em
+
+a[download]
+  color: white
+  white-space: nowrap
+  text-decoration: none
+  padding: 0.5em
+  border-radius: 0.5em
+  background-color: $COLOR_FFMPEG
+
+audio
+  width: 100%
+  display: block

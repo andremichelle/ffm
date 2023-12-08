@@ -17,25 +17,6 @@
   row-gap: 2em
   align-items: center
 
-header
-  perspective: 200px
-
-  > div
-    display: grid
-    grid-template-columns: 75px
-    row-gap: 0.5em
-    padding: 0.5em
-    border-radius: 1em
-    border: 2px $COLOR_FFMPEG solid
-    color: $COLOR_FFMPEG
-    text-align: center
-    box-shadow: 0 0 1em 0 rgba($COLOR_FFMPEG, 0.5) inset, 0 0 2em 0 rgba($COLOR_FFMPEG, 0.25)
-    animation: intro 1s ease-out
-    transform: rotateY(-22.5deg)
-
-    > img
-      width: 100%
-
 h1
   margin: 0
   padding: 0
@@ -78,38 +59,3 @@ div.error
   color: orange
   font-size: 0.75em
 
-div.file-info
-  min-width: 100%
-  max-width: 100%
-  overflow: hidden auto
-  text-overflow: ellipsis
-  display: grid
-  grid-template-columns: repeat(2, 1fr)
-  column-gap: 1em
-  font-size: 10px
-
-  > span
-    text-align: left
-    white-space: nowrap
-    color: white
-
-    &:nth-child(2n+1)
-      color: $COLOR_FFMPEG
-      text-align: right
-
-div.download
-  display: flex
-  align-items: center
-  column-gap: 0.5em
-  line-height: 1em
-
-a[download]
-  color: white
-  text-decoration: none
-  padding: 0.5em
-  border-radius: 0.5em
-  background-color: $COLOR_FFMPEG
-
-audio
-  width: 100%
-  display: block

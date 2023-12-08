@@ -1,23 +1,25 @@
 import "./App.sass"
 import { useEffect, useState } from "react"
-import { FFmpegWorker, FileConversionResult } from "./common/ffmepg.ts"
-import { unitValue } from "./common/lang.ts"
-import { Progress } from "./Progress.tsx"
-import { Header } from "./Header.tsx"
-import { FileSource } from "./common/FileSource.tsx"
-import { ConversionResult } from "./ConversionResult.tsx"
+import { FFmpegWorker, FileConversionResult } from "./common/ffmepg"
+import { unitValue } from "./common/lang"
+import { Progress } from "./components/Progress"
+import { Header } from "./components/Header"
+import { FileSource } from "./common/FileSource"
+import { ConversionResult } from "./components/ConversionResult"
 
 const App = () => {
     const [ffmpeg, setFfmpeg] = useState<FFmpegWorker | unitValue>(0.0)
     const [files, setFiles] = useState<ReadonlyArray<File>>([])
-    const [state, setState] = useState<FileConversionResult | unitValue | string>("")
+    const [conversationState, setConversationState] = useState<FileConversionResult | unitValue | string>("")
 
     const ffmpegLoaded = ffmpeg instanceof FFmpegWorker
-    const conversionInProgress = typeof state === "number"
+    const conversionInProgress = typeof conversationState === "number"
 
     useEffect(() => {
-        (async () => setFfmpeg(await FFmpegWorker.preload(progress => setFfmpeg(Math.min(progress, 1.0)))))()
-        return () => {if (ffmpegLoaded) {ffmpeg.terminate()}}
+        (async () => setFfmpeg(await FFmpegWorker.preload(progress => setFfmpeg(progress))))()
+        return () => {
+            if (ffmpegLoaded) {ffmpeg.terminate()}
+        }
     }, [])
 
     useEffect(() => {
@@ -25,13 +27,13 @@ const App = () => {
             (async () => {
                 let result: FileConversionResult
                 try {
-                    result = await ffmpeg.convert(files[0], progress => setState(progress))
+                    result = await ffmpeg.convert(files[0], progress => setConversationState(progress))
                 } catch (reason) {
-                    setState(`Unknown format (${files[0].name})`)
+                    setConversationState(`Unrecognised audio format (${files[0].name})`)
                     setFiles([])
                     return
                 }
-                setState(result)
+                setConversationState(result)
             })()
         }
     }, [files, ffmpeg])
@@ -43,14 +45,14 @@ const App = () => {
             <FileSource
                 disabled={!ffmpegLoaded || conversionInProgress}
                 onChanged={files => {
-                    setState(0.0)
+                    setConversationState(0.0)
                     setFiles(files)
                 }} />
             {(() => {
-                if (typeof state === "string") {
-                    return <div className="error">{state}</div>
+                if (typeof conversationState === "string") {
+                    return <div className="error">{conversationState}</div>
                 } else if (conversionInProgress) {
-                    return <Progress value={state}></Progress>
+                    return <Progress value={conversationState}></Progress>
                 } else if (!ffmpegLoaded || files.length === 0) {
                     // Idle. Waiting for input...
                     return
@@ -59,7 +61,7 @@ const App = () => {
                         const path = files[0].name
                         return path.substring(0, path.lastIndexOf("."))
                     })()
-                    return <ConversionResult name={name} state={state} />
+                    return <ConversionResult name={name} state={conversationState} />
                 }
             })()}
         </>

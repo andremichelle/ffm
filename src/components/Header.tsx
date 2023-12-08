@@ -1,5 +1,6 @@
-import { Progress } from "./Progress.tsx"
-import { unitValue } from "./common/lang.ts"
+import "./Header.sass"
+import { Progress } from "./Progress"
+import { unitValue } from "../common/lang"
 
 export const Header = ({ progress }: { progress: unitValue }) => (
     <header>
