@@ -1,7 +1,8 @@
 import React, { ChangeEvent, useEffect, useState } from "react"
-import "./App.sass"
 import { FFmpegWorker, FileConversionResult } from "./common/ffmepg.ts"
 import { int, KeyValuePair, Nullable, unitValue } from "./common/lang.ts"
+import "./App.sass"
+import { Progress } from "./Progress.tsx"
 
 const App = () => {
     const [ffmpeg, setFfmpeg] = useState<Nullable<FFmpegWorker>>(null)
@@ -11,7 +12,7 @@ const App = () => {
     const [conversationState, setConversationState] = useState<FileConversionResult | unitValue | string>("N/A")
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setConversationState("processing")
+        setConversationState("processing...")
         setFiles([...event.target.files ?? []])
     }
 
@@ -37,7 +38,11 @@ const App = () => {
 
     return (
         <>
-            <progress value={ffmpegLoadingProgress} max={1.0} />
+            <header>
+                <div>FFMPEG</div>
+                <img src="ffmpeg.wasm.png" alt="logo" />
+                <Progress value={ffmpegLoadingProgress} />
+            </header>
             <label htmlFor="myfile" />
             <input type="file" id="myfile" name="myfile" multiple={true} onChange={handleChange}
                    disabled={ffmpeg === null} />
