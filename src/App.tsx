@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from "react"
-import { FFmpegWorker, FileConversionResult } from "./common/ffmepg.ts"
-import { int, KeyValuePair, unitValue } from "./common/lang.ts"
 import "./App.sass"
+import { useEffect, useState } from "react"
+import { FFmpegWorker, FileConversionResult } from "./common/ffmepg.ts"
+import { unitValue } from "./common/lang.ts"
 import { Progress } from "./Progress.tsx"
 import { Header } from "./Header.tsx"
 import { FileSource } from "./common/FileSource.tsx"
+import { ConversionResult } from "./ConversionResult.tsx"
 
 const App = () => {
     const [ffmpeg, setFfmpeg] = useState<FFmpegWorker | unitValue>(0.0)
-
     const [files, setFiles] = useState<ReadonlyArray<File>>([])
-    const [conversationState, setConversationState] = useState<FileConversionResult | unitValue | string>("")
+    const [state, setState] = useState<FileConversionResult | unitValue | string>("")
 
     const ffmpegLoaded = ffmpeg instanceof FFmpegWorker
+    const conversionInProgress = typeof state === "number"
 
     useEffect(() => {
         (async () => setFfmpeg(await FFmpegWorker.preload(progress => setFfmpeg(progress))))()
@@ -26,59 +27,41 @@ const App = () => {
             (async () => {
                 let result: FileConversionResult
                 try {
-                    result = await ffmpeg.convert(files[0], progress => setConversationState(progress))
+                    result = await ffmpeg.convert(files[0], progress => setState(progress))
                 } catch (reason) {
-                    setConversationState(`Unrecognised audio format (${files[0].name})`)
+                    setState(`Unrecognised audio format (${files[0].name})`)
                     setFiles([])
                     return
                 }
-                setConversationState(result)
+                setState(result)
             })()
         }
     }, [files, ffmpeg])
 
     return (
         <>
-            <h1>Quickly Convert Any Audio File To Wav</h1>
+            <h1>Convert Any Audio File To Wav</h1>
             <Header progress={ffmpegLoaded ? 1.0 : ffmpeg} />
             <FileSource
-                disabled={!ffmpegLoaded || typeof conversationState === "number"}
+                disabled={!ffmpegLoaded || conversionInProgress}
                 onChanged={files => {
-                    setConversationState(0.0)
+                    setState(0.0)
                     setFiles(files)
                 }} />
             {(() => {
-                if (typeof conversationState === "string") {
-                    return <div className="error">{conversationState}</div>
-                } else if (typeof conversationState === "number") {
-                    return <Progress value={conversationState}></Progress>
+                if (typeof state === "string") {
+                    return <div className="error">{state}</div>
+                } else if (conversionInProgress) {
+                    return <Progress value={state}></Progress>
                 } else if (!ffmpegLoaded || files.length === 0) {
                     // Idle. Waiting for input...
                     return
                 } else {
-                    // we have a valid wav-file...
-                    //
-                    const objectURL = URL.createObjectURL(new Blob([conversationState.file_data], { type: "audio/wav" }))
-                    const fileName = (() => {
+                    const name = (() => {
                         const path = files[0].name
                         return path.substring(0, path.lastIndexOf("."))
                     })()
-                    return (
-                        <>
-                            <div className="file-info">{
-                                conversationState.meta_data.map((pair: KeyValuePair, index: int) =>
-                                    <React.Fragment key={pair.key + index}>
-                                        <span>{pair.key}</span>
-                                        <span>{pair.value}</span>
-                                    </React.Fragment>)}
-                            </div>
-                            <audio controls src={objectURL}></audio>
-                            <div className="download">
-                                <span>Download</span>
-                                <a href={objectURL} download={`${fileName}.wav`}>{`${fileName}.wav`}</a>
-                            </div>
-                        </>
-                    )
+                    return <ConversionResult name={name} state={state} />
                 }
             })()}
         </>
