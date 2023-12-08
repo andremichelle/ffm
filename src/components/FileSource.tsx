@@ -1,3 +1,4 @@
+import "./FileSource.sass"
 import React from "react"
 
 type FileSourceProps = {
@@ -5,9 +6,9 @@ type FileSourceProps = {
     onChanged: (files: ReadonlyArray<File>) => void
 }
 
-export const FileSource = ({disabled, onChanged}: FileSourceProps) => (
-    <fieldset disabled={disabled}>
-        <label className="file"
+export const FileSource = ({ disabled, onChanged }: FileSourceProps) => (
+    <fieldset className="file-source" disabled={disabled}>
+        <label
                onDragOver={event => {
                    event.currentTarget.classList.add("dragover")
                    event.preventDefault()

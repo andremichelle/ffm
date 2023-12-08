@@ -77,7 +77,8 @@ export class FFmpegWorker implements Terminable {
                 const value = line.substring(separatorIndex + 1).trim()
                 return ({ key, value })
             })
-            .filter(({ key, value }) => key !== "" && value !== "" && !IgnoreKeys.includes(key))
+            .filter(({ key, value }) =>
+                key !== "" && value !== "" && !IgnoreKeys.includes(key) && !key.startsWith("id3v"))
     }
 }
 

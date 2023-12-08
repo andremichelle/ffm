@@ -18,35 +18,6 @@ h1
   font-size: 1.75em
   text-shadow: 0 0 0.25em rgba(black, 0.75), 0 0 2em rgba($COLOR_FFMPEG, 0.75)
 
-fieldset
-  border: none
-  outline: none
-  color: $COLOR_FFMPEG
-  transition: opacity 500ms
-  width: 100%
-
-  &:disabled
-    opacity: 0.1
-    pointer-events: none
-
-  label.file
-    width: 100%
-    height: 4em
-    border: 0.25em $COLOR_FFMPEG dashed
-    border-radius: 1em
-    display: flex
-    align-items: center
-    justify-content: center
-    user-select: none
-    transition: all 200ms ease-in
-
-    &:active, &.dragover
-      color: lighten($COLOR_FFMPEG, 25%)
-      border: 0.25em lighten($COLOR_FFMPEG, 25%) dashed
-
-    > input
-      display: none
-
 div.error
   color: orange
   font-size: 0.75em

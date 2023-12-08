@@ -4,7 +4,7 @@ import { FFmpegWorker, FileConversionResult } from "./common/ffmepg"
 import { unitValue } from "./common/lang"
 import { Progress } from "./components/Progress"
 import { Header } from "./components/Header"
-import { FileSource } from "./common/FileSource"
+import { FileSource } from "./components/FileSource.tsx"
 import { ConversionResult } from "./components/ConversionResult"
 
 const App = () => {
