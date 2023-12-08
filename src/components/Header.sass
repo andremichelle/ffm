@@ -1,7 +1,15 @@
 @import ../common
 
+@keyframes intro
+  from
+    opacity: 0.0
+    transform: translateZ(-1000px) rotateY(-225deg)
+  to
+    opacity: 1.0
+    transform: translateZ(0) rotateY(-22.5deg)
+
 header
-  perspective: 200px
+  perspective: 125px
 
   > div
     display: grid
@@ -14,7 +22,7 @@ header
     text-align: center
     box-shadow: 0 0 1em 0 rgba($COLOR_FFMPEG, 0.5) inset, 0 0 2em 0 rgba($COLOR_FFMPEG, 0.25)
     animation: intro 1s ease-out
-    transform: rotateY(-22.5deg)
+    transform: translateZ(0) rotateY(-22.5deg)
 
     > img
-      width: 100%
+      width: 75px
