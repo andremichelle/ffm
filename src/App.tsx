@@ -64,6 +64,7 @@ const App = () => {
                     return <ConversionResult name={name} state={conversationState} />
                 }
             })()}
+            <footer>Just a finger-exercise to learn REACT</footer>
         </>
     )
 }

@@ -8,5 +8,6 @@ export const Header = ({ progress }: { progress: unitValue }) => (
             <div>ffmpeg</div>
             <img src="ffmpeg.wasm.png" alt="logo" />
             <Progress className={progress === 1.0 ? "" : "blink"} value={progress} />
+            <div style={{fontSize: "0.5em"}}>{progress < 1.0 ? "LOADING" : "READY"}</div>
         </div>
     </header>)
