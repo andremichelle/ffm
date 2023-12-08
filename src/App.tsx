@@ -16,10 +16,8 @@ const App = () => {
     const conversionInProgress = typeof state === "number"
 
     useEffect(() => {
-        (async () => setFfmpeg(await FFmpegWorker.preload(progress => setFfmpeg(progress))))()
-        return () => {
-            if (ffmpegLoaded) {ffmpeg.terminate()}
-        }
+        (async () => setFfmpeg(await FFmpegWorker.preload(progress => setFfmpeg(Math.min(progress, 1.0)))))()
+        return () => {if (ffmpegLoaded) {ffmpeg.terminate()}}
     }, [])
 
     useEffect(() => {
@@ -29,7 +27,7 @@ const App = () => {
                 try {
                     result = await ffmpeg.convert(files[0], progress => setState(progress))
                 } catch (reason) {
-                    setState(`Unrecognised audio format (${files[0].name})`)
+                    setState(`Unknown format (${files[0].name})`)
                     setFiles([])
                     return
                 }
