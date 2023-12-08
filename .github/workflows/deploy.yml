@@ -1,31 +1,16 @@
-name: Deploy to FTP Server
-
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
-
+name: Deploy via ftp
+on: push
 jobs:
-  build-and-deploy:
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Install and Build
-        run: |
-          npm install
-          npm run build
-
-      - name: Deploy file
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      - uses: actions/checkout@v2
+      - name: Upload ftp
+        uses: genietim/ftp-action@releases/v4
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          port: 22
-          local_path: "dist/*"
-          remote_path: "/"
-          sftp_only: false
+          host: ${{ secrets.FTP_SERVER }}
+          user: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+          localDir: "dist/*"
+          remoteDir: "/"
