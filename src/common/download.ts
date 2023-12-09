@@ -1,4 +1,4 @@
-// This works in a codepen.io on Safari, but only with https
+// This works in a codepen.io on Safari, but only with https (not localhost)
 // https://www.codepel.com/demo/javascript-download-multiple-files/
 export const forceDownload = (url: string, fileName: string) => {
     const xhr = new XMLHttpRequest()
