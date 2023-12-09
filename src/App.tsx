@@ -8,17 +8,20 @@ import { FileSource } from "./components/FileSource.tsx"
 import { ConversionResult } from "./components/ConversionResult"
 import { forceDownload } from "./common/download.ts"
 
-type State = ReadonlyArray<PromiseSettledResult<FileConversionResult>> | unitValue | string
+type FileConversionState = ReadonlyArray<PromiseSettledResult<FileConversionResult>> | unitValue | string
 
 const App = () => {
     const [ffmpeg, setFfmpeg] = useState<FFmpegWorker | unitValue>(0.0)
     const [files, setFiles] = useState<ReadonlyArray<File>>([])
-    const [state, setState] = useState<State>("")
+    const [fileConversionState, setFileConversionState] = useState<FileConversionState>("")
 
     const ffmpegLoaded = ffmpeg instanceof FFmpegWorker
-    const conversionInProgress = typeof state === "number"
+    const conversionInProgress = typeof fileConversionState === "number"
 
     useEffect(() => {
+        // this gets called twice in strict mode
+        // It works because FFmpegWorker.load can be called multiple times
+        // What is actually the best practice here?
         (async () => setFfmpeg(await FFmpegWorker.load(progress => setFfmpeg(progress))))()
         const playEventListener = (event: Event) => {
             document.querySelectorAll("audio")
@@ -33,7 +36,8 @@ const App = () => {
 
     useEffect(() => {
         if (ffmpegLoaded && files.length > 0) {
-            (async () => setState(await ffmpeg.batch(files, progress => setState(progress))))()
+            (async () =>
+                setFileConversionState(await ffmpeg.batch(files, progress => setFileConversionState(progress))))()
         }
     }, [files, ffmpeg])
 
@@ -44,30 +48,30 @@ const App = () => {
             <FileSource
                 disabled={!ffmpegLoaded || conversionInProgress}
                 onChanged={files => {
-                    setState(0.0)
+                    setFileConversionState(0.0)
                     setFiles(files)
                 }} />
             {(() => {
-                if (typeof state === "string") {
-                    return state !== "" ?? <div className="error">{state}</div>
+                if (typeof fileConversionState === "string") {
+                    return fileConversionState === "" ? null : <div className="error">{fileConversionState}</div>
                 } else if (conversionInProgress) {
-                    return <Progress value={state}></Progress>
+                    return <Progress value={fileConversionState}></Progress>
                 } else if (!ffmpegLoaded || files.length === 0) {
                     // Idle. Waiting for input...
                     return
                 } else {
+                    const downloadAllOption = fileConversionState
+                        .reduce((count, result) => count + (result.status === "fulfilled" ? 1 : 0), 0) > 1
                     return (
                         <>
-                            {
-                                state.reduce((count, result) => count + (result.status === "fulfilled" ? 1 : 0), 0) > 1
-                                    ? <a className="download-all" href="#"
-                                         onClick={() => document
-                                             .querySelectorAll<HTMLAnchorElement>("a[download]")
-                                             .forEach(anchor => forceDownload(anchor.href, anchor.download))}>
-                                        download all</a> : null
-                            }
+                            {downloadAllOption
+                                ? <a className="download-all" href="#"
+                                     onClick={() => document
+                                         .querySelectorAll<HTMLAnchorElement>("a[download]")
+                                         .forEach(anchor => forceDownload(anchor.href, anchor.download))}>
+                                    download all</a> : null}
                             <div className="conversion-results">
-                                {state.map((state: PromiseSettledResult<FileConversionResult>, index: int) => {
+                                {fileConversionState.map((state: PromiseSettledResult<FileConversionResult>, index: int) => {
                                     return <ConversionResult fileNameWithExtension={files[index].name} state={state}
                                                              key={index} />
                                 })}
