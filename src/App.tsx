@@ -58,12 +58,21 @@ const App = () => {
                     // Idle. Waiting for input...
                     return
                 } else {
-                    return <div className="conversion-results">
-                        {state.map((state: PromiseSettledResult<FileConversionResult>, index: int) => {
-                            return <ConversionResult fileNameWithExtension={files[index].name} state={state}
-                                                     key={index} />
-                        })}
-                    </div>
+                    return (
+                        <>
+                            {
+                                state.reduce((count, result) => count + (result.status === "fulfilled" ? 1 : 0), 0) > 1
+                                    ? <a className="download-all" href="#"
+                                         onClick={() => document.querySelectorAll<HTMLAnchorElement>("a[download]")
+                                             .forEach(anchor => anchor.click())}>download all</a> : null
+                            }
+                            <div className="conversion-results">
+                                {state.map((state: PromiseSettledResult<FileConversionResult>, index: int) => {
+                                    return <ConversionResult fileNameWithExtension={files[index].name} state={state}
+                                                             key={index} />
+                                })}
+                            </div>
+                        </>)
                 }
             })()}
             <footer>Just a finger-exercise to learn REACT</footer>
