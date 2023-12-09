@@ -13,7 +13,6 @@ import { Terminable } from "./common/terminable.ts"
 
 // url string, base64, File or Blob
 export type AcceptedSource = string | File | Blob
-
 export type FileConversionResult = { file_data: Uint8Array, meta_data: Array<KeyValuePair> }
 
 export class FFmpegWorker implements Terminable {
@@ -39,11 +38,12 @@ export class FFmpegWorker implements Terminable {
 
     get loaded(): boolean {return this.#ffmpeg.loaded}
 
-    async batch(files: ReadonlyArray<AcceptedSource>,
-                progressHandler: ProgressHandler = SilentProgressHandler): Promise<ReadonlyArray<PromiseSettledResult<FileConversionResult>>> {
-        const result: Array<PromiseSettledResult<FileConversionResult>> = new Array(files.length)
-        const totalProgress = Progress.split(progressHandler, files.length)
-        for (const [index, file] of files.entries()) {
+    async batch(sources: ReadonlyArray<AcceptedSource>,
+                progressHandler: ProgressHandler = SilentProgressHandler)
+        : Promise<ReadonlyArray<PromiseSettledResult<FileConversionResult>>> {
+        const result: Array<PromiseSettledResult<FileConversionResult>> = new Array(sources.length)
+        const totalProgress = Progress.split(progressHandler, sources.length)
+        for (const [index, file] of sources.entries()) {
             try {
                 result[index] = { status: "fulfilled", value: await this.convert(file, totalProgress[index]) }
             } catch (reason) {
@@ -58,10 +58,11 @@ export class FFmpegWorker implements Terminable {
     // num-channels: "-ac", "2"
     // -sample_fmt: "fltp", "s16le"
 
-    async convert(file: AcceptedSource, progressHandler: ProgressHandler = SilentProgressHandler): Promise<FileConversionResult> {
+    async convert(source: AcceptedSource,
+                  progressHandler: ProgressHandler = SilentProgressHandler): Promise<FileConversionResult> {
         const subscription = this.#progressNotifier.subscribe(progressHandler)
         try {
-            await this.#ffmpeg.writeFile("temp.raw", await fetchFile(file))
+            await this.#ffmpeg.writeFile("temp.raw", await fetchFile(source))
             await this.#ffmpeg.exec([
                 "-y",
                 "-i", "temp.raw",
