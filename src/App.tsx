@@ -79,9 +79,9 @@ const App = () => {
                 }
             })()}
             <footer>
-                <span>Just a finger-exercise to learn REACT</span>
                 <span>No Ads | No Tracking | No Bullshit</span>
                 <span>andre.michelle[guess what]gmail.com</span>
+                <span>powered by <a href="https://github.com/ffmpegwasm/" target="ffmpegwasm">ffmpegwasm</a></span>
             </footer>
         </div>)
 }
