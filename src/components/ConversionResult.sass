@@ -3,64 +3,84 @@
 div.conversion-result
   display: flex
   flex-direction: column
-  row-gap: 1em
-  padding: 1em
-  border: 1px rgba(white, 0.04) solid
+  padding: 0 1em
   border-radius: 1em
   width: 100%
+  height: 32px
   background-color: rgba(black, 0.1)
-  align-items: center
+  box-shadow: 0 0 1px 0 rgba(white, 0.1) inset
 
-  > div.name
-    min-width: 100%
-    max-width: 100%
-    overflow: hidden auto
+  .name
+    white-space: nowrap
+    overflow: hidden
     text-overflow: ellipsis
     font-size: 0.75em
+    cursor: pointer
+    color: $COLOR_FFMPEG
 
-  > div.file-info
-    min-width: 100%
-    max-width: 100%
-    overflow: hidden auto
-    text-overflow: ellipsis
-    display: grid
-    grid-template-columns: repeat(2, auto)
-    column-gap: 1em
-    font-size: 10px
-
-    > span
-      text-align: left
-      white-space: nowrap
-      color: white
-
-      &:nth-child(2n+1)
-        color: $COLOR_FFMPEG
-        text-align: right
-        text-transform: capitalize
-
-  > div.download
+  > details
     display: flex
-    align-items: center
+    flex-direction: column
+
+    > summary
+      display: grid
+      grid-template-columns: 1fr 16em 1.5em
+      column-gap: 0.5em
+      align-items: center
+
+      &::-webkit-details-marker
+        display: none
+
+      > audio
+        width: -webkit-fill-available
+        width: -moz-fill-available
+        height: 32px
+        display: flex
+
+        &::-webkit-media-controls-enclosure
+          background: none
+
+        &::-webkit-media-controls-panel
+          height: fit-content
+          padding: 0
+
+      > a[download]
+        display: flex
+
+        > svg
+          width: 1.25em
+          height: 1.25em
+          fill: white
+
+    > div.file-info
+      margin-top: 1em
+      min-width: 100%
+      max-width: 100%
+      overflow: hidden auto
+      text-overflow: ellipsis
+      display: grid
+      grid-template-columns: repeat(2, auto)
+      column-gap: 1em
+      font-size: 10px
+
+      > span
+        text-align: left
+        white-space: nowrap
+        color: white
+
+        &:nth-child(2n+1)
+          color: $COLOR_FFMPEG
+          text-align: right
+          text-transform: capitalize
+
+  > div.failure
+    height: 100%
+    display: grid
+    grid-template-columns: 1fr 17.5em
     column-gap: 0.5em
-    line-height: 1em
-    font-size: 0.75em
+    align-items: center
 
-    > a[download]
-      color: white
-      white-space: nowrap
-      text-decoration: none
-      padding: 0.5em
-      border-radius: 0.5em
-      background-color: $COLOR_FFMPEG
-
-  > audio
-    width: 100%
-    height: 32px
-    display: block
-
-    &::-webkit-media-controls-enclosure
-      background: $COLOR_FFMPEG
-
-    &::-webkit-media-controls-panel
-      height: fit-content
-      padding: 0 3px
+    > .reason
+      padding: 0 0 0 0.5em
+      font-size: 0.75em
+      color: rgba(orange, 0.5)

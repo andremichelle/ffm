@@ -52,7 +52,7 @@ const App = () => {
                 }} />
             {(() => {
                 if (typeof state === "string") {
-                    return <div className="error">{state}</div>
+                    return state !== "" ?? <div className="error">{state}</div>
                 } else if (conversionInProgress) {
                     return <Progress value={state}></Progress>
                 } else if (!ffmpegLoaded || files.length === 0) {
