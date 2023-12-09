@@ -6,7 +6,6 @@ import { Progress } from "./components/Progress"
 import { Header } from "./components/Header"
 import { FileSource } from "./components/FileSource.tsx"
 import { ConversionResult } from "./components/ConversionResult"
-import { forceDownload } from "./common/download.ts"
 
 type State = ReadonlyArray<PromiseSettledResult<FileConversionResult>> | unitValue | string
 
@@ -66,7 +65,7 @@ const App = () => {
                                     ? <a className="download-all" href="#"
                                          onClick={() => document
                                              .querySelectorAll<HTMLAnchorElement>("a[download]")
-                                             .forEach(anchor => forceDownload(anchor.href, anchor.download))}>
+                                             .forEach(anchor => anchor.click())}>
                                         download all</a> : null
                             }
                             <div className="conversion-results">
