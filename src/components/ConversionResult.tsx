@@ -1,7 +1,7 @@
 import "./ConversionResult.sass"
 import React from "react"
 import { int, KeyValuePair } from "../common/lang"
-import { FileConversionResult } from "../common/ffmepg"
+import { FileConversionResult } from "../ffmepg.ts"
 
 type ConversationResultProps = {
     fileNameWithExtension: string

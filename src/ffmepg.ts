@@ -4,12 +4,12 @@ import { FFmpeg } from "@ffmpeg/ffmpeg"
 import { fetchFile, toBlobURL } from "@ffmpeg/util"
 import { LogEvent } from "@ffmpeg/ffmpeg/dist/esm/types"
 import { DownloadProgressEvent } from "@ffmpeg/util/dist/esm/types"
-import { Arrays } from "./arrays"
-import { KeyValuePair, Nullable, unitValue } from "./lang"
-import { Progress, ProgressHandler, SilentProgressHandler } from "./progress"
-import { Notifier } from "./observers"
-import { Lazy } from "./decorators"
-import { Terminable } from "./terminable.ts"
+import { Arrays } from "./common/arrays.ts"
+import { KeyValuePair, Nullable, unitValue } from "./common/lang.ts"
+import { Progress, ProgressHandler, SilentProgressHandler } from "./common/progress.ts"
+import { Notifier } from "./common/observers.ts"
+import { Lazy } from "./common/decorators.ts"
+import { Terminable } from "./common/terminable.ts"
 
 // url string, base64, File or Blob
 export type AcceptedSource = string | File | Blob
@@ -19,7 +19,7 @@ export type FileConversionResult = { file_data: Uint8Array, meta_data: Array<Key
 export class FFmpegWorker implements Terminable {
     static #log: Array<string> = []
 
-    static async preload(progress: ProgressHandler = SilentProgressHandler): Promise<FFmpegWorker> {
+    static async load(progress: ProgressHandler = SilentProgressHandler): Promise<FFmpegWorker> {
         return Loader.loadAndAttach(progress)
     }
 
@@ -53,6 +53,11 @@ export class FFmpegWorker implements Terminable {
         return result
     }
 
+    // if we want to make it adjustable
+    // sample-rate: "-ar", "44100"
+    // num-channels: "-ac", "2"
+    // -sample_fmt: "fltp", "s16le"
+
     async convert(file: AcceptedSource, progressHandler: ProgressHandler = SilentProgressHandler): Promise<FileConversionResult> {
         const subscription = this.#progressNotifier.subscribe(progressHandler)
         try {
@@ -61,7 +66,8 @@ export class FFmpegWorker implements Terminable {
                 "-y",
                 "-i", "temp.raw",
                 "-f", "ffmetadata", "metadata.txt",
-                "-vn", "-ar", "44100", "-ac", "2", "-b:a", "192k", "output.wav"
+                "-vn",
+                "output.wav"
             ])
             const meta_data: Uint8Array | string = await this.#ffmpeg.readFile("metadata.txt")
             if (typeof meta_data === "string") {
@@ -113,8 +119,8 @@ class Loader {
 
     @Lazy
     async load(): Promise<FFmpegWorker> {
-        console.debug("FFmpeg loading...")
         const baseURL = "ffmpeg@0.12.4"
+        console.debug(`${baseURL} loading...`)
         const ffmpeg = new FFmpeg()
         const progressHandlers = Progress
             .split((progress: unitValue): void => this.#progressNotifier.notify(progress), 3)
@@ -127,7 +133,7 @@ class Loader {
         ])
         return ffmpeg.load({ coreURL, wasmURL, workerURL }).then(success => {
             if (!success) {return Promise.reject("Could not load FFmpeg")}
-            console.debug("FFmpeg successfully loaded")
+            console.debug(`${baseURL} successfully loaded`)
             return new FFmpegWorker(ffmpeg)
         })
     }

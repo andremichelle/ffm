@@ -1,6 +1,6 @@
 import "./App.sass"
 import { useEffect, useState } from "react"
-import { FFmpegWorker, FileConversionResult } from "./common/ffmepg"
+import { FFmpegWorker, FileConversionResult } from "./ffmepg.ts"
 import { int, unitValue } from "./common/lang"
 import { Progress } from "./components/Progress"
 import { Header } from "./components/Header"
@@ -19,13 +19,10 @@ const App = () => {
     const conversionInProgress = typeof state === "number"
 
     useEffect(() => {
-        (async () => setFfmpeg(await FFmpegWorker.preload(progress => setFfmpeg(progress))))()
+        (async () => setFfmpeg(await FFmpegWorker.load(progress => setFfmpeg(progress))))()
         const playEventListener = (event: Event) => {
-            document.querySelectorAll("audio").forEach(audio => {
-                if (audio !== event.target) {
-                    audio.pause()
-                }
-            })
+            document.querySelectorAll("audio")
+                .forEach(audio => {if (audio !== event.target) {audio.pause()}})
         }
         self.addEventListener("play", playEventListener, { capture: true })
         return () => {
@@ -42,7 +39,7 @@ const App = () => {
 
     return (
         <div>
-            <h1>Convert Any Audio Files To Wav</h1>
+            <h1>Convert Any Files With Audio To Wav</h1>
             <Header progress={ffmpegLoaded ? 1.0 : ffmpeg} />
             <FileSource
                 disabled={!ffmpegLoaded || conversionInProgress}
@@ -82,6 +79,7 @@ const App = () => {
                 <span>No Ads | No Tracking | No Bullshit</span>
                 <span>andre.michelle[guess what]gmail.com</span>
                 <span>powered by <a href="https://github.com/ffmpegwasm/" target="ffmpegwasm">ffmpegwasm</a></span>
+                <span><a href="https://github.com/andremichelle/ffm/" target="ffmpegwasm">sourcecode</a></span>
             </footer>
         </div>)
 }
