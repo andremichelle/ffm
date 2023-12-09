@@ -78,7 +78,11 @@ const App = () => {
                         </>)
                 }
             })()}
-            <footer>Just a finger-exercise to learn REACT</footer>
+            <footer>
+                <span>Just a finger-exercise to learn REACT</span>
+                <span>No Ads | No Tracking | No Bullshit</span>
+                <span>andre.michelle[guess what]gmail.com</span>
+            </footer>
         </div>)
 }
 
