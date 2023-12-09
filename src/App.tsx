@@ -40,7 +40,7 @@ const App = () => {
     }, [files, ffmpeg])
 
     return (
-        <>
+        <div>
             <h1>Convert Any Audio Files To Wav</h1>
             <Header progress={ffmpegLoaded ? 1.0 : ffmpeg} />
             <FileSource
@@ -76,7 +76,7 @@ const App = () => {
                 }
             })()}
             <footer>Just a finger-exercise to learn REACT</footer>
-        </>)
+        </div>)
 }
 
 export default App
