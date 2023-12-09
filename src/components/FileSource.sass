@@ -1,9 +1,11 @@
 @import ../common
 
+$COLOR_FFMPEG_BRIGHT: lighten($COLOR_FFMPEG, 10%)
+
 fieldset.file-source
+  display: flex
   border: none
   outline: none
-  color: $COLOR_FFMPEG
   transition: opacity 500ms
   width: 100%
   margin: 0
@@ -16,7 +18,10 @@ fieldset.file-source
   label
     width: 100%
     height: 4em
-    border: 0.25em $COLOR_FFMPEG dashed
+    border: 1px $COLOR_FFMPEG dashed
+    color: $COLOR_FFMPEG
+    background-color: rgba($COLOR_FFMPEG, 0.06)
+    box-shadow: 0 0 1em 0 rgba($COLOR_FFMPEG, 0.5) inset, 0 0 2em 0 rgba($COLOR_FFMPEG, 0.25)
     border-radius: 1em
     display: flex
     align-items: center
@@ -25,9 +30,11 @@ fieldset.file-source
     transition: all 200ms ease-in
     cursor: pointer
 
-    &:active, &.dragover
-      color: lighten($COLOR_FFMPEG, 25%)
-      border: 0.25em lighten($COLOR_FFMPEG, 25%) dashed
+    &:hover, &.dragover
+      color: $COLOR_FFMPEG_BRIGHT
+      border: 1px $COLOR_FFMPEG_BRIGHT dashed
+      background-color: rgba($COLOR_FFMPEG_BRIGHT, 0.06)
+      box-shadow: 0 0 1em 0 rgba($COLOR_FFMPEG_BRIGHT, 0.5) inset, 0 0 2em 0 rgba($COLOR_FFMPEG_BRIGHT, 0.25)
 
     > input
       display: none

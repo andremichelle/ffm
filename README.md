@@ -2,4 +2,5 @@
 
 ## TODO
 * waveform
-* wav format properties
+* wav format properties 
+* nicer player with download all in one line 
