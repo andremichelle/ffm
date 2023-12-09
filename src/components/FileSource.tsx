@@ -22,13 +22,13 @@ export const FileSource = ({ disabled, onChanged }: FileSourceProps) => (
                    onChanged([...event.dataTransfer.files])
                }}>
             <input type="file"
-                   multiple={false}
+                   multiple={true}
                    onClick={(event) => {
                        // resets internal input state to force change event
                        event.currentTarget.value = ""
                    }}
                    onChange={(event) => onChanged([...event.currentTarget.files ?? []])} />
-            Drop file here or click to browse
+            Drop files here or click to browse...
         </label>
     </fieldset>
 )

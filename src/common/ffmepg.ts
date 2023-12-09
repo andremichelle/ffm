@@ -11,6 +11,9 @@ import { Notifier } from "./observers"
 import { Lazy } from "./decorators"
 import { Terminable } from "./terminable.ts"
 
+// url string, base64, File or Blob
+export type AcceptedSource = string | File | Blob
+
 export type FileConversionResult = { file_data: Uint8Array, meta_data: Array<KeyValuePair> }
 
 export class FFmpegWorker implements Terminable {
@@ -36,7 +39,21 @@ export class FFmpegWorker implements Terminable {
 
     get loaded(): boolean {return this.#ffmpeg.loaded}
 
-    async convert(file: string | File | Blob, progressHandler: ProgressHandler = SilentProgressHandler): Promise<FileConversionResult> {
+    async batch(files: ReadonlyArray<AcceptedSource>,
+                progressHandler: ProgressHandler = SilentProgressHandler): Promise<ReadonlyArray<PromiseSettledResult<FileConversionResult>>> {
+        const result: Array<PromiseSettledResult<FileConversionResult>> = new Array(files.length)
+        const totalProgress = Progress.split(progressHandler, files.length)
+        for (const [index, file] of files.entries()) {
+            try {
+                result[index] = { status: "fulfilled", value: await this.convert(file, totalProgress[index]) }
+            } catch (reason) {
+                result[index] = { status: "rejected", reason: reason }
+            }
+        }
+        return result
+    }
+
+    async convert(file: AcceptedSource, progressHandler: ProgressHandler = SilentProgressHandler): Promise<FileConversionResult> {
         const subscription = this.#progressNotifier.subscribe(progressHandler)
         try {
             await this.#ffmpeg.writeFile("temp.raw", await fetchFile(file))
@@ -56,8 +73,7 @@ export class FFmpegWorker implements Terminable {
             }
             return { file_data, meta_data: this.#parseMetaData(meta_data) }
         } catch (reason) {
-            console.warn(reason)
-            return Promise.reject(reason)
+            throw reason
         } finally {
             subscription.terminate()
             await this.#ffmpeg.deleteFile("temp.raw")

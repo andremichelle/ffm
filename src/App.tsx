@@ -1,72 +1,73 @@
 import "./App.sass"
 import { useEffect, useState } from "react"
 import { FFmpegWorker, FileConversionResult } from "./common/ffmepg"
-import { unitValue } from "./common/lang"
+import { int, unitValue } from "./common/lang"
 import { Progress } from "./components/Progress"
 import { Header } from "./components/Header"
 import { FileSource } from "./components/FileSource.tsx"
 import { ConversionResult } from "./components/ConversionResult"
 
+type State = ReadonlyArray<PromiseSettledResult<FileConversionResult>> | unitValue | string
+
 const App = () => {
     const [ffmpeg, setFfmpeg] = useState<FFmpegWorker | unitValue>(0.0)
     const [files, setFiles] = useState<ReadonlyArray<File>>([])
-    const [conversationState, setConversationState] = useState<FileConversionResult | unitValue | string>("")
+    const [state, setState] = useState<State>("")
 
     const ffmpegLoaded = ffmpeg instanceof FFmpegWorker
-    const conversionInProgress = typeof conversationState === "number"
+    const conversionInProgress = typeof state === "number"
 
     useEffect(() => {
         (async () => setFfmpeg(await FFmpegWorker.preload(progress => setFfmpeg(progress))))()
+        const playEventListener = (event: Event) => {
+            document.querySelectorAll("audio").forEach(audio => {
+                if (audio !== event.target) {
+                    audio.pause()
+                }
+            })
+        }
+        self.addEventListener("play", playEventListener, { capture: true })
         return () => {
+            self.removeEventListener("play", playEventListener, { capture: true })
             if (ffmpegLoaded) {ffmpeg.terminate()}
         }
     }, [])
 
     useEffect(() => {
         if (ffmpegLoaded && files.length > 0) {
-            (async () => {
-                let result: FileConversionResult
-                try {
-                    result = await ffmpeg.convert(files[0], progress => setConversationState(progress))
-                } catch (reason) {
-                    setConversationState(`Unrecognised audio format (${files[0].name})`)
-                    setFiles([])
-                    return
-                }
-                setConversationState(result)
-            })()
+            (async () => setState(await ffmpeg.batch(files, progress => setState(progress))))()
         }
     }, [files, ffmpeg])
 
     return (
         <>
-            <h1>Convert Any Audio File To Wav</h1>
+            <h1>Convert Any Audio Files To Wav</h1>
             <Header progress={ffmpegLoaded ? 1.0 : ffmpeg} />
             <FileSource
                 disabled={!ffmpegLoaded || conversionInProgress}
                 onChanged={files => {
-                    setConversationState(0.0)
+                    setState(0.0)
                     setFiles(files)
                 }} />
             {(() => {
-                if (typeof conversationState === "string") {
-                    return <div className="error">{conversationState}</div>
+                if (typeof state === "string") {
+                    return <div className="error">{state}</div>
                 } else if (conversionInProgress) {
-                    return <Progress value={conversationState}></Progress>
+                    return <Progress value={state}></Progress>
                 } else if (!ffmpegLoaded || files.length === 0) {
                     // Idle. Waiting for input...
                     return
                 } else {
-                    const name = (() => {
-                        const path = files[0].name
-                        return path.substring(0, path.lastIndexOf("."))
-                    })()
-                    return <ConversionResult name={name} state={conversationState} />
+                    return <div className="conversion-results">
+                        {state.map((state: PromiseSettledResult<FileConversionResult>, index: int) => {
+                            return <ConversionResult fileNameWithExtension={files[index].name} state={state}
+                                                     key={index} />
+                        })}
+                    </div>
                 }
             })()}
             <footer>Just a finger-exercise to learn REACT</footer>
-        </>
-    )
+        </>)
 }
 
 export default App
