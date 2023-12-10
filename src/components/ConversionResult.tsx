@@ -1,6 +1,6 @@
 import "./ConversionResult.sass"
 import React, { useEffect, useRef, useState } from "react"
-import { asDefined, int, KeyValuePair } from "../common/lang"
+import { asDefined, beDefined, int, KeyValuePair, Nullable } from "../common/lang"
 import { FileConversionResult } from "../ffmepg.ts"
 
 type ConversationResultProps = {
@@ -10,9 +10,8 @@ type ConversationResultProps = {
 
 export const ConversionResult = ({ fileNameWithExtension, state }: ConversationResultProps) => {
     const infoRef = useRef<HTMLDivElement>(null)
-    const [objectURL, setObjectURL] = useState<string>("")
+    const [objectURL, setObjectURL] = useState<Nullable<string>>(null)
 
-    // This feels so ludicrous to do.
     useEffect(() => {
         if (state.status === "fulfilled") {
             const url = URL.createObjectURL(new Blob([state.value.file_data], { type: "audio/wav" }))
@@ -25,6 +24,7 @@ export const ConversionResult = ({ fileNameWithExtension, state }: ConversationR
         <div className="conversion-result">
             {(() => {
                 if (state.status === "fulfilled") {
+                    beDefined(objectURL, "state is fulfilled but no objectURL has been created")
                     const fileName = fileNameWithExtension.substring(0, fileNameWithExtension.lastIndexOf("."))
                     return (
                         <>

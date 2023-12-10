@@ -19,7 +19,7 @@ const App = () => {
     const conversionInProgress = typeof fileConversionState === "number"
 
     useEffect(() => {
-        // this gets called twice in strict mode
+        // This gets called twice in strict mode
         // It works because FFmpegWorker.load can be called multiple times
         // What is actually the best practice here?
         (async () => setFfmpeg(await FFmpegWorker.load(progress => setFfmpeg(progress))))()

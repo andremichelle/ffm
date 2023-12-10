@@ -38,6 +38,7 @@ export type Nullable<T> = T | null
 export type AnyFunc = (...args: any[]) => any
 export const isDefined = <T>(value: Nullish<T>): value is T => value !== undefined && value !== null
 export const asDefined = <T>(value: Nullish<T>, fail: string = "asDefined failed"): T => value === null || value === undefined ? panic(fail) : value
+export function beDefined<T>(value: Nullish<T>, fail: string = "beDefined failed"): asserts value is NonNullable<T> {return value === null || value === undefined ? panic(fail) : undefined}
 export const isInstanceOf = <T>(obj: unknown, clazz: Class<T>): obj is T => obj instanceof clazz
 export const tryProvide = <T>(provider: Provider<T>): T => {try {return provider()} catch (reason) {return panic(String(reason))}}
 export const getOrProvide = <T>(value: ValueOrProvider<T>): T => value instanceof Function ? value() : value
