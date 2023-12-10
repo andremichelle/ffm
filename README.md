@@ -5,4 +5,4 @@ Most work has been done by [ffmpeg.wasm](https://github.com/ffmpegwasm/).
 
 ![alt screenshot](snapshot.png)
 
-[Open FFM](https://www.andremichelle.io/ffm/)
+[Open FFM](https://www.andremichelle.io/ffm/) | Tested on Macbook Chrome, Safari, Firefox and Safari IOS
