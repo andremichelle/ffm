@@ -19,7 +19,7 @@ jobs:
           host: ${{ secrets.FTP_SERVER }}
           user: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          localDir: "updating.html"
+          localDir: "updating/"
           remoteDir: "/"
           options: "--ascii" # Upload only the temporary index.html
 
