@@ -13,34 +13,25 @@ jobs:
           npm install
           npm run build
 
-      - name: Example of Echo Command
-        run: echo "Upload 1"
-
-      - name: Upload 'Updating' Page
-        uses: sebastianpopp/ftp-action@releases/v2
-        with:
-          host: ${{ secrets.FTP_SERVER }}
-          user: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          localDir: "updating/"
-          remoteDir: "/"
-          options: "--verbose --ascii"
-
-      - name: Example of Echo Command
-        run: echo "Upload 2"
-
-      - name: Upload other assets
-        uses: sebastianpopp/ftp-action@releases/v2
-        with:
-          host: ${{ secrets.FTP_SERVER }}
-          user: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          localDir: "dist/"
-          remoteDir: "/"
-          options: "--verbose --delete --ascii --exclude=index.html"
-
-      - name: Example of Echo Command
-        run: echo "Upload 3"
+#      - name: Upload 'Updating' Page
+#        uses: sebastianpopp/ftp-action@releases/v2
+#        with:
+#          host: ${{ secrets.FTP_SERVER }}
+#          user: ${{ secrets.FTP_USERNAME }}
+#          password: ${{ secrets.FTP_PASSWORD }}
+#          localDir: "updating/"
+#          remoteDir: "/"
+#          options: "--verbose --ascii"
+#
+#      - name: Upload other assets
+#        uses: sebastianpopp/ftp-action@releases/v2
+#        with:
+#          host: ${{ secrets.FTP_SERVER }}
+#          user: ${{ secrets.FTP_USERNAME }}
+#          password: ${{ secrets.FTP_PASSWORD }}
+#          localDir: "dist/"
+#          remoteDir: "/"
+#          options: "--verbose --delete --ascii --exclude=index.html"
 
       - name: Upload actual index.html
         uses: sebastianpopp/ftp-action@releases/v2
@@ -51,6 +42,3 @@ jobs:
           localDir: "dist/"
           remoteDir: "/"
           options: "--verbose --ascii --include=index.html"
-
-      - name: Example of Echo Command
-        run: echo "Upload completed"
