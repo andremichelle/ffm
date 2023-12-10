@@ -12,8 +12,6 @@ export const ConversionResult = ({ fileNameWithExtension, state }: ConversationR
     const [showMetaData, setShowMetaData] = useState(false)
     const [objectURL, setObjectURL] = useState<string>("")
 
-    console.log("showMetaData", showMetaData)
-
     // This feels so ludicrous to do.
     useEffect(() => {
         if (state.status === "fulfilled") {
