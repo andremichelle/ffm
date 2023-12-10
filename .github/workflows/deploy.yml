@@ -21,7 +21,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           localDir: "updating/"
           remoteDir: "/"
-          options: "--verbose --ascii" # Upload only the temporary index.html
+          options: "--verbose --ascii"
 
       - name: Upload Other Assets
         uses: sebastianpopp/ftp-action@releases/v2
@@ -31,14 +31,14 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           localDir: "dist/"
           remoteDir: "/"
-          options: "--verbose --ascii --exclude=index.html" # Exclude index.html in this step
+          options: "--verbose --delete --ascii --exclude=index.html"
 
-      - name: Upload Final 'index.html'
+      - name: Upload Other Assets
         uses: sebastianpopp/ftp-action@releases/v2
         with:
           host: ${{ secrets.FTP_SERVER }}
           user: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          localDir: "dist/" # Path to the final index.html
+          localDir: "dist/"
           remoteDir: "/"
-          options: "--verbose --ascii --include=index.html" # Upload only the final index.html
+          options: "--verbose --ascii --include=index.html"
