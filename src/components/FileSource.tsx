@@ -2,12 +2,13 @@ import "./FileSource.sass"
 import React from "react"
 
 type FileSourceProps = {
+    loaded: boolean
     disabled: boolean
     onChanged: (files: ReadonlyArray<File>) => void
 }
 
-export const FileSource = ({ disabled, onChanged }: FileSourceProps) => (
-    <fieldset className="file-source" disabled={disabled}>
+export const FileSource = ({ loaded, disabled, onChanged }: FileSourceProps) => (
+    <fieldset className={`file-source ${loaded ? "loaded" : ""}`} disabled={disabled}>
         <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <rect x="1" y="1" width="7.33" height="7.33">
                 <animate id="spinner_oJFS" begin="0;spinner_5T1J.end+0.2s" attributeName="x" dur="0.6s"

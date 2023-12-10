@@ -46,6 +46,7 @@ const App = () => {
             <h1>Convert Any Files With Audio To Wav</h1>
             <Header progress={ffmpegLoaded ? 1.0 : ffmpeg} />
             <FileSource
+                loaded={ffmpegLoaded}
                 disabled={!ffmpegLoaded || conversionInProgress}
                 onChanged={files => {
                     setFileConversionState(0.0)

@@ -15,10 +15,13 @@ fieldset.file-source
   &:disabled
     pointer-events: none
 
-    > svg
+    > label
+      opacity: 0.1
+
+    &.loaded > svg
       opacity: 1.0
 
-    > label
+    &.loaded > label
       opacity: 0.0
 
   > svg
