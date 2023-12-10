@@ -13,7 +13,17 @@ jobs:
           npm install
           npm run build
 
-      - name: Upload to FTP
+      - name: Upload 'Updating' Page
+        uses: sebastianpopp/ftp-action@releases/v2
+        with:
+          host: ${{ secrets.FTP_SERVER }}
+          user: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          localDir: "updating.html"
+          remoteDir: "/"
+          options: "--ascii" # Upload only the temporary index.html
+
+      - name: Upload Other Assets
         uses: sebastianpopp/ftp-action@releases/v2
         with:
           host: ${{ secrets.FTP_SERVER }}
@@ -21,4 +31,14 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           localDir: "dist/"
           remoteDir: "/"
-          options: "--delete --ascii"
+          options: "--delete --ascii --exclude=index.html" # Exclude index.html in this step
+
+      - name: Upload Final 'index.html'
+        uses: sebastianpopp/ftp-action@releases/v2
+        with:
+          host: ${{ secrets.FTP_SERVER }}
+          user: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          localDir: "dist/" # Path to the final index.html
+          remoteDir: "/"
+          options: "--ascii --include=index.html" # Upload only the final index.html
