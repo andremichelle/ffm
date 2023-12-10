@@ -23,15 +23,15 @@ jobs:
 #          remoteDir: "/"
 #          options: "--verbose --ascii"
 #
-#      - name: Upload other assets
-#        uses: sebastianpopp/ftp-action@releases/v2
-#        with:
-#          host: ${{ secrets.FTP_SERVER }}
-#          user: ${{ secrets.FTP_USERNAME }}
-#          password: ${{ secrets.FTP_PASSWORD }}
-#          localDir: "dist/"
-#          remoteDir: "/"
-#          options: "--verbose --delete --ascii --exclude=index.html"
+      - name: Upload other assets
+        uses: sebastianpopp/ftp-action@releases/v2
+        with:
+          host: ${{ secrets.FTP_SERVER }}
+          user: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          localDir: "dist/"
+          remoteDir: "/"
+          options: "--verbose --delete --ascii --exclude=index.html"
 
       - name: Upload actual index.html
         uses: sebastianpopp/ftp-action@releases/v2
