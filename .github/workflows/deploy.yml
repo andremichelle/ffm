@@ -19,26 +19,26 @@ jobs:
           host: ${{ secrets.FTP_SERVER }}
           user: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          localDir: "updating/"
-          remoteDir: "/"
-          options: "--ascii" # Upload only the temporary index.html
-
-      - name: Upload Other Assets
-        uses: sebastianpopp/ftp-action@releases/v2
-        with:
-          host: ${{ secrets.FTP_SERVER }}
-          user: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
           localDir: "dist/"
           remoteDir: "/"
-          options: "--delete --ascii --exclude=index.html" # Exclude index.html in this step
+          options: "--verbose --ascii" # Upload only the temporary index.html
 
-      - name: Upload Final 'index.html'
-        uses: sebastianpopp/ftp-action@releases/v2
-        with:
-          host: ${{ secrets.FTP_SERVER }}
-          user: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          localDir: "dist/" # Path to the final index.html
-          remoteDir: "/"
-          options: "--ascii --include=index.html" # Upload only the final index.html
+#      - name: Upload Other Assets
+#        uses: sebastianpopp/ftp-action@releases/v2
+#        with:
+#          host: ${{ secrets.FTP_SERVER }}
+#          user: ${{ secrets.FTP_USERNAME }}
+#          password: ${{ secrets.FTP_PASSWORD }}
+#          localDir: "dist/"
+#          remoteDir: "/"
+#          options: "--verbose --delete --ascii --exclude=index.html" # Exclude index.html in this step
+#
+#      - name: Upload Final 'index.html'
+#        uses: sebastianpopp/ftp-action@releases/v2
+#        with:
+#          host: ${{ secrets.FTP_SERVER }}
+#          user: ${{ secrets.FTP_USERNAME }}
+#          password: ${{ secrets.FTP_PASSWORD }}
+#          localDir: "dist/" # Path to the final index.html
+#          remoteDir: "/"
+#          options: "--verbose --ascii --include=index.html" # Upload only the final index.html
