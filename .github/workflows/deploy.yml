@@ -41,4 +41,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           localDir: "dist/"
           remoteDir: "/"
-          options: "--verbose --delete --ascii --include=index.html"
+          options: "--verbose --ascii"
