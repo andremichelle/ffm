@@ -13,7 +13,7 @@ import { Terminable } from "./common/terminable.ts"
 
 // url string, base64, File or Blob
 export type AcceptedSource = string | File | Blob
-export type FileConversionResult = { file_data: Uint8Array, meta_data: Array<KeyValuePair> }
+export type FileConversionResult = { file_data: Blob, meta_data: Array<KeyValuePair> }
 
 export class FFmpegWorker implements Terminable {
     static #log: Array<string> = []
@@ -78,7 +78,10 @@ export class FFmpegWorker implements Terminable {
             if (typeof file_data === "string") {
                 return Promise.reject(file_data)
             }
-            return { file_data, meta_data: this.#parseMetaData(meta_data) }
+            return {
+                file_data: new Blob([file_data], { type: "audio/wav" }),
+                meta_data: this.#parseMetaData(meta_data)
+            }
         } catch (reason) {
             throw reason
         } finally {

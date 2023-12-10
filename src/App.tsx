@@ -76,7 +76,8 @@ const App = () => {
                             )}
                             <div className="conversion-results">
                                 {fileConversionState.map((state: PromiseSettledResult<FileConversionResult>, index: int) => {
-                                    return <ConversionResult fileNameWithExtension={files[index].name} state={state}
+                                    return <ConversionResult fileNameWithExtension={files[index].name}
+                                                             state={state}
                                                              key={index} />
                                 })}
                             </div>

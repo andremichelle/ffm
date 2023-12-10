@@ -10,26 +10,22 @@ type ConversationResultProps = {
 
 export const ConversionResult = ({ fileNameWithExtension, state }: ConversationResultProps) => {
     const infoRef = useRef<HTMLDivElement>(null)
-    const [objectURL, setObjectURL] = useState<string>("")
-
+    const [objectURL, setObjectURL] = useState("")
     useEffect(() => {
+        console.debug("mount")
         if (state.status === "fulfilled") {
-            const url = URL.createObjectURL(new Blob([state.value.file_data], { type: "audio/wav" }))
-            setObjectURL(url)
-            return () => URL.revokeObjectURL(url)
+            setObjectURL(URL.createObjectURL(state.value.file_data))
+        }
+        return () => {
+            console.debug("unmount")
+            URL.revokeObjectURL(objectURL)
+            setObjectURL("")
         }
     }, [])
-
     return (
         <div className="conversion-result">
             {(() => {
                 if (state.status === "fulfilled") {
-                    if (objectURL === "") {
-                        console.warn(
-                            "This should not happening. " +
-                            "The objectURL is set when this component is mounted. " +
-                            "Still not sure when React does what :(")
-                    }
                     const fileName = fileNameWithExtension.substring(0, fileNameWithExtension.lastIndexOf("."))
                     return (
                         <>
