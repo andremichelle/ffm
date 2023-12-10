@@ -1,6 +1,6 @@
 import "./ConversionResult.sass"
-import React, { useEffect, useState } from "react"
-import { int, KeyValuePair } from "../common/lang"
+import React, { useEffect, useRef, useState } from "react"
+import { asDefined, int, KeyValuePair } from "../common/lang"
 import { FileConversionResult } from "../ffmepg.ts"
 
 type ConversationResultProps = {
@@ -9,7 +9,7 @@ type ConversationResultProps = {
 }
 
 export const ConversionResult = ({ fileNameWithExtension, state }: ConversationResultProps) => {
-    const [showMetaData, setShowMetaData] = useState(false)
+    const infoRef = useRef<HTMLDivElement>(null)
     const [objectURL, setObjectURL] = useState<string>("")
 
     // This feels so ludicrous to do.
@@ -30,7 +30,7 @@ export const ConversionResult = ({ fileNameWithExtension, state }: ConversationR
                         <>
                             <div className="file-header">
                                 <div className="name"
-                                     onClick={() => setShowMetaData(!showMetaData)}>{fileNameWithExtension}</div>
+                                     onClick={() => asDefined(infoRef.current).classList.toggle("hidden")}>{fileNameWithExtension}</div>
                                 <audio controls src={objectURL}></audio>
                                 <a href={objectURL} download={`${fileName}.wav`}
                                    onClick={event => event.stopPropagation()}>
@@ -40,16 +40,14 @@ export const ConversionResult = ({ fileNameWithExtension, state }: ConversationR
                                     </svg>
                                 </a>
                             </div>
-                            {showMetaData && (
-                                <div className="file-info">
-                                    {state.value.meta_data.map((pair: KeyValuePair, index: int) =>
-                                        <React.Fragment key={pair.key + index}>
-                                            <span>{pair.key}</span>
-                                            <span>{pair.value}</span>
-                                        </React.Fragment>
-                                    )}
-                                </div>
-                            )}
+                            <div className="file-info hidden" ref={infoRef}>
+                                {state.value.meta_data.map((pair: KeyValuePair, index: int) =>
+                                    <React.Fragment key={pair.key + index}>
+                                        <span>{pair.key}</span>
+                                        <span>{pair.value}</span>
+                                    </React.Fragment>
+                                )}
+                            </div>
                         </>)
                 } else {
                     return (
