@@ -1,6 +1,6 @@
 import "./ConversionResult.sass"
 import React, { useEffect, useRef, useState } from "react"
-import { asDefined, beDefined, int, KeyValuePair, Nullable } from "../common/lang"
+import { asDefined, int, KeyValuePair } from "../common/lang"
 import { FileConversionResult } from "../ffmepg.ts"
 
 type ConversationResultProps = {
@@ -10,7 +10,7 @@ type ConversationResultProps = {
 
 export const ConversionResult = ({ fileNameWithExtension, state }: ConversationResultProps) => {
     const infoRef = useRef<HTMLDivElement>(null)
-    const [objectURL, setObjectURL] = useState<Nullable<string>>(null)
+    const [objectURL, setObjectURL] = useState<string>("")
 
     useEffect(() => {
         if (state.status === "fulfilled") {
@@ -24,7 +24,6 @@ export const ConversionResult = ({ fileNameWithExtension, state }: ConversationR
         <div className="conversion-result">
             {(() => {
                 if (state.status === "fulfilled") {
-                    beDefined(objectURL, "state is fulfilled but no objectURL has been created")
                     const fileName = fileNameWithExtension.substring(0, fileNameWithExtension.lastIndexOf("."))
                     return (
                         <>
