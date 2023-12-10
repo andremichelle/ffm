@@ -6,7 +6,6 @@ div.conversion-result
   padding: 0 1em
   border-radius: 1em
   width: 100%
-  height: 32px
   background-color: rgba(black, 0.1)
   box-shadow: 0 0 1px 0 rgba(white, 0.1) inset
 
@@ -18,67 +17,64 @@ div.conversion-result
     cursor: pointer
     color: $COLOR_FFMPEG
 
-  > details
-    display: flex
-    flex-direction: column
+  > .file-header
+    display: grid
+    grid-template-columns: 1fr 16em 1.5em
+    column-gap: 0.5em
+    align-items: center
 
-    > summary
-      display: grid
-      grid-template-columns: 1fr 16em 1.5em
-      column-gap: 0.5em
-      align-items: center
+    &::-webkit-details-marker
+      display: none
 
-      &::-webkit-details-marker
-        display: none
+    > audio
+      width: -webkit-fill-available
+      width: -moz-fill-available
+      height: 32px
+      display: flex
 
-      > audio
-        width: -webkit-fill-available
-        width: -moz-fill-available
-        height: 32px
-        display: flex
+      &::-webkit-media-controls-enclosure
+        background: none
 
-        &::-webkit-media-controls-enclosure
-          background: none
+      &::-webkit-media-controls-panel
+        height: fit-content
+        padding: 0
 
-        &::-webkit-media-controls-panel
-          height: fit-content
-          padding: 0
+    > a[download]
+      display: flex
+      cursor: grab
 
-      > a[download]
-        display: flex
+      > svg
+        width: 1.25em
+        height: 1.25em
+        fill: white
 
-        > svg
-          width: 1.25em
-          height: 1.25em
-          fill: white
+  > div.file-info
+    margin: 1em 0
+    min-width: 100%
+    max-width: 100%
+    overflow: hidden auto
+    text-overflow: ellipsis
+    display: grid
+    grid-template-columns: repeat(2, auto)
+    column-gap: 1em
+    font-size: 10px
 
-    > div.file-info
-      margin-top: 1em
-      min-width: 100%
-      max-width: 100%
-      overflow: hidden auto
-      text-overflow: ellipsis
-      display: grid
-      grid-template-columns: repeat(2, auto)
-      column-gap: 1em
-      font-size: 10px
+    > span
+      text-align: left
+      white-space: nowrap
+      color: white
 
-      > span
-        text-align: left
-        white-space: nowrap
-        color: white
-
-        &:nth-child(2n+1)
-          color: $COLOR_FFMPEG
-          text-align: right
-          text-transform: capitalize
+      &:nth-child(2n+1)
+        color: $COLOR_FFMPEG
+        text-align: right
+        text-transform: capitalize
 
   > div.failure
-    height: 100%
     display: grid
     grid-template-columns: 1fr 17.5em
     column-gap: 0.5em
     align-items: center
+    height: 32px
 
     > .reason
       padding: 0 0 0 0.5em
