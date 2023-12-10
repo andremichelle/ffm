@@ -60,16 +60,20 @@ const App = () => {
                     // Idle. Waiting for input...
                     return
                 } else {
-                    const downloadAllOption = fileConversionState
-                        .reduce((count, result) => count + (result.status === "fulfilled" ? 1 : 0), 0) > 1
+                    const numberOfDownloads = fileConversionState
+                        .reduce((count, result) => count + (result.status === "fulfilled" ? 1 : 0), 0)
                     return (
                         <>
-                            {downloadAllOption
-                                ? <a className="download-all" href="#"
-                                     onClick={() => document
-                                         .querySelectorAll<HTMLAnchorElement>("a[download]")
-                                         .forEach(anchor => forceDownload(anchor.href, anchor.download))}>
-                                    download all</a> : null}
+                            {numberOfDownloads > 0 && (
+                                <a className="download-all" href="#"
+                                   onClick={() => document
+                                       .querySelectorAll<HTMLAnchorElement>("a[download]")
+                                       .forEach(anchor => forceDownload(anchor.href, anchor.download))}>
+                                    {numberOfDownloads > 1
+                                        ? `Download ${numberOfDownloads} wav-files`
+                                        : `Download wav-file`}
+                                </a>
+                            )}
                             <div className="conversion-results">
                                 {fileConversionState.map((state: PromiseSettledResult<FileConversionResult>, index: int) => {
                                     return <ConversionResult fileNameWithExtension={files[index].name} state={state}
@@ -80,7 +84,7 @@ const App = () => {
                 }
             })()}
             <footer>
-                <span>No Ads | No Tracking | No Bullshit</span>
+                <span>No Ads | No Uploads | No Tracking | No Bullshit</span>
                 <span>andre.michelle[guess what]gmail.com</span>
                 <span>powered by <a href="https://github.com/ffmpegwasm/" target="ffmpegwasm">ffmpegwasm</a></span>
                 <span><a href="https://github.com/andremichelle/ffm/" target="ffmpegwasm">sourcecode</a></span>
