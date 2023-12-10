@@ -33,6 +33,9 @@ jobs:
           remoteDir: /
           options: --verbose --delete --parallel --ascii --exclude=index.html --no-perms
 
+      - name: Wait for 30 seconds
+        run: sleep 30
+
       - name: Upload Actual Index
         uses: sebastianpopp/ftp-action@releases/v2
         with:
