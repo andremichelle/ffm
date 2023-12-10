@@ -10,12 +10,27 @@ fieldset.file-source
   width: 100%
   margin: 0
   padding: 0
+  position: relative
 
   &:disabled
-    opacity: 0.1
     pointer-events: none
 
-  label
+    > svg
+      opacity: 1.0
+
+    > label
+      opacity: 0.0
+
+  > svg
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
+    position: absolute
+    fill: $COLOR_FFMPEG_BRIGHT
+    opacity: 0.0
+    transition: opacity 250ms ease-in
+
+  > label
     width: 100%
     height: 4em
     border: 1px $COLOR_FFMPEG dashed
@@ -27,7 +42,7 @@ fieldset.file-source
     align-items: center
     justify-content: center
     user-select: none
-    transition: all 200ms ease-in
+    transition: all 300ms ease-in
     cursor: pointer
 
     &:hover, &.dragover
