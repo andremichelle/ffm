@@ -31,7 +31,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           localDir: "dist/"
           remoteDir: "/"
-          options: "--verbose --delete --ascii --exclude=index.html" # Exclude index.html in this step
+          options: "--verbose --ascii --exclude=index.html" # Exclude index.html in this step
 
       - name: Upload Final 'index.html'
         uses: sebastianpopp/ftp-action@releases/v2
