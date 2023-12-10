@@ -24,12 +24,20 @@ export const ConversionResult = ({ fileNameWithExtension, state }: ConversationR
         <div className="conversion-result">
             {(() => {
                 if (state.status === "fulfilled") {
+                    if (objectURL === "") {
+                        console.warn(
+                            "This should not happening. " +
+                            "The objectURL is set when this component is mounted. " +
+                            "Still not sure when React does what :(")
+                    }
                     const fileName = fileNameWithExtension.substring(0, fileNameWithExtension.lastIndexOf("."))
                     return (
                         <>
                             <div className="file-header">
                                 <div className="name"
-                                     onClick={() => asDefined(infoRef.current).classList.toggle("hidden")}>{fileNameWithExtension}</div>
+                                     onClick={() => asDefined(infoRef.current).classList.toggle("hidden")}>
+                                    {fileNameWithExtension}
+                                </div>
                                 <audio controls src={objectURL}></audio>
                                 <a href={objectURL} download={`${fileName}.wav`}
                                    onClick={event => event.stopPropagation()}>

@@ -13,7 +13,7 @@ jobs:
           npm install
           npm run build
 
-      - name: Upload other assets
+      - name: Upload
         uses: sebastianpopp/ftp-action@releases/v2
         with:
           host: ${{ secrets.FTP_SERVER }}
