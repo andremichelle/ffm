@@ -2,7 +2,7 @@ name: Deploy via FTP
 on: push
 jobs:
   deploy:
-    name: Deploy
+    name: Deploy FFM
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -13,16 +13,6 @@ jobs:
           npm install
           npm run build
 
-#      - name: Upload 'Updating' Page
-#        uses: sebastianpopp/ftp-action@releases/v2
-#        with:
-#          host: ${{ secrets.FTP_SERVER }}
-#          user: ${{ secrets.FTP_USERNAME }}
-#          password: ${{ secrets.FTP_PASSWORD }}
-#          localDir: "updating/"
-#          remoteDir: "/"
-#          options: "--verbose --ascii"
-#
       - name: Upload other assets
         uses: sebastianpopp/ftp-action@releases/v2
         with:
@@ -31,14 +21,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           localDir: "dist/"
           remoteDir: "/"
-          options: "--verbose --delete --ascii --exclude=index.html"
-
-      - name: Upload actual index.html
-        uses: sebastianpopp/ftp-action@releases/v2
-        with:
-          host: ${{ secrets.FTP_SERVER }}
-          user: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          localDir: "dist/"
-          remoteDir: "/"
-          options: "--verbose --ascii --include=index.html"
+          options: "--verbose --delete --ascii"
