@@ -13,12 +13,32 @@ jobs:
           npm install
           npm run build
 
-      - name: Upload
+      - name: Upload Update Page
         uses: sebastianpopp/ftp-action@releases/v2
         with:
           host: ${{ secrets.FTP_SERVER }}
           user: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          localDir: "dist/"
-          remoteDir: "/"
-          options: "--verbose --delete --ascii"
+          localDir: updating/
+          remoteDir: /
+          options: --verbose --ascii --no-perms
+
+      - name: Upload Assets
+        uses: sebastianpopp/ftp-action@releases/v2
+        with:
+          host: ${{ secrets.FTP_SERVER }}
+          user: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          localDir: dist/
+          remoteDir: /
+          options: --verbose --delete --parallel --ascii --exclude=index.html --no-perms
+
+      - name: Upload Actual Index
+        uses: sebastianpopp/ftp-action@releases/v2
+        with:
+          host: ${{ secrets.FTP_SERVER }}
+          user: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          localDir: dist/
+          remoteDir: /
+          options: --verbose --ascii --overwrite --include=index.html --no-perms
