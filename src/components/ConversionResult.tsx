@@ -12,12 +12,10 @@ export const ConversionResult = ({ fileNameWithExtension, state }: ConversationR
     const infoRef = useRef<HTMLDivElement>(null)
     const [objectURL, setObjectURL] = useState("")
     useEffect(() => {
-        console.debug("mount")
         if (state.status === "fulfilled") {
             setObjectURL(URL.createObjectURL(state.value.file_data))
         }
         return () => {
-            console.debug("unmount")
             URL.revokeObjectURL(objectURL)
             setObjectURL("")
         }
