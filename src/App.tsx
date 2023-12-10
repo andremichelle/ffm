@@ -43,7 +43,7 @@ const App = () => {
 
     return (
         <div>
-            <h1>Convert Any Files With Audio To Wav</h1>
+            <h1>Decode Any Media Files To Wav</h1>
             <Header progress={ffmpegLoaded ? 1.0 : ffmpeg} />
             <FileSource
                 loaded={ffmpegLoaded}
