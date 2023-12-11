@@ -27,9 +27,21 @@ const App = () => {
             document.querySelectorAll("audio")
                 .forEach(audio => {if (audio !== event.target) {audio.pause()}})
         }
+        const endedEventListener = (event: Event) => {
+            const audioElements = Array.from(document.querySelectorAll("audio"))
+            const curr = event.target as HTMLAudioElement
+            const index = audioElements.indexOf(curr)
+            if (-1 === index) {return}
+            const next = audioElements[(index + 1) % audioElements.length]
+            curr.currentTime = 0
+            next.currentTime = 0
+            next.play().catch()
+        }
         self.addEventListener("play", playEventListener, { capture: true })
+        self.addEventListener("ended", endedEventListener, { capture: true })
         return () => {
             self.removeEventListener("play", playEventListener, { capture: true })
+            self.removeEventListener("ended", endedEventListener, { capture: true })
             if (ffmpegLoaded) {ffmpeg.terminate()}
         }
     }, [])
