@@ -12,7 +12,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 if (import.meta.env.PROD && "serviceWorker" in navigator) {
     console.debug("register ServiceWorker...")
-    navigator.serviceWorker.register(ServiceWorkerUrl, { type: "module" })
+    navigator.serviceWorker.register(ServiceWorkerUrl, { type: "module", scope: "/ffm/" })
         .then((registration: ServiceWorkerRegistration) =>
                 console.debug("ServiceWorker registration successful with scope: ", registration.scope),
             err => console.warn("ServiceWorker registration failed: ", err))
