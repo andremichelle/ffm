@@ -2,6 +2,9 @@ const CACHE_NAME = "ffm-cache-v1"
 
 console.log("sw", CACHE_NAME)
 
+// assets/asset-manifest.json > https://www.andremichelle.io/ffm/assets/assets/asset-manifest.json
+// ./asset-manifest.json > https://www.andremichelle.io/ffm/assets/asset-manifest.json
+
 const installListener = (event: ExtendableEvent) => {
     console.debug("sw received install event.")
     event.waitUntil(
