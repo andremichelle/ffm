@@ -6,7 +6,9 @@ const installListener = (event: ExtendableEvent) => {
     console.debug("sw received install event.")
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(async (cache: Cache) => cache.addAll(await fetch("assets/asset-manifest.json").then(x => x.json()) as Array<string>))
+            .then(async (cache: Cache) => cache
+                .addAll(await fetch("./asset-manifest.json")
+                    .then(x => x.json()) as Array<string>))
             .then(() => console.debug("caching completed."))
     )
 }
