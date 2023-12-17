@@ -8,10 +8,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Install Bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+
       - name: Build
         run: |
           npm install
           npm run build
+
+      - name: Generate Manifest
+        run: |
+          bun ./build/generate-manifest.ts
+
+      - name: Abort Workflow
+        run: exit 1
 
       - name: Upload Update Page
         uses: sebastianpopp/ftp-action@releases/v2
