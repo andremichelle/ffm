@@ -24,4 +24,5 @@ const excludes = [".DS_Store", ".htaccess"]
     const data = JSON.stringify(files.filter(file => !excludes.some(exclude => file.endsWith(exclude))
         && !file.includes("service-worker-")))
     await writeFile("./dist/asset-manifest.json", data)
+    console.debug(data)
 })()
