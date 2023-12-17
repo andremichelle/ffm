@@ -10,7 +10,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     </React.StrictMode>
 )
 
-if (import.meta.env.PROD && "serviceWorker" in navigator) {
+// TODO This is not working.
+//  Try moving the service-worker script into the root of the /dist folder and remove the scope
+if (false && import.meta.env.PROD && "serviceWorker" in navigator) {
     console.debug("register ServiceWorker...")
     navigator.serviceWorker.register(ServiceWorkerUrl, { type: "module", scope: "/ffm/" })
         .then((registration: ServiceWorkerRegistration) =>
