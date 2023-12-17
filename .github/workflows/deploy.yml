@@ -22,8 +22,8 @@ jobs:
         run: |
           bun ./build/generate-manifest.ts
 
-      - name: Abort Workflow
-        run: exit 1
+#      - name: Abort Workflow
+#        run: exit 1
 
       - name: Upload Update Page
         uses: sebastianpopp/ftp-action@releases/v2
