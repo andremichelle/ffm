@@ -28,13 +28,17 @@ const fetchListener = (event: FetchEvent) => {
                     return response
                 }
                 if (event.request.url.endsWith("/favicon.ico")) {
-                    return caches.match("/ffm/favicon.ico").then((faviconResponse) => {
-                        if (faviconResponse) {
-                            return faviconResponse
-                        } else {
-                            return new Response("Favicon not found in cache.", { status: 404 })
-                        }
-                    })
+                    console.debug("favicon")
+                    return caches.match("/ffm/favicon.ico")
+                        .then((faviconResponse) => {
+                            if (faviconResponse) {
+                                console.debug("favicon found")
+                                return faviconResponse
+                            } else {
+                                console.debug("favicon found")
+                                return new Response("Favicon not found in cache.", { status: 404 })
+                            }
+                        })
                 }
                 console.debug("missed cache", url)
                 return fetch(event.request).catch(() => {
