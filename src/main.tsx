@@ -9,7 +9,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     </React.StrictMode>
 )
 
-console.log(`PROD: ${import.meta.env.PROD}`)
+console.debug(`PROD: ${import.meta.env.PROD}`)
 
 if (import.meta.env.PROD && "serviceWorker" in navigator) {
     console.debug("register ServiceWorker...")

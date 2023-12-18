@@ -1,6 +1,6 @@
 const CACHE_NAME = "ffm-cache-v1"
 
-console.log("sw", CACHE_NAME)
+console.debug("sw", CACHE_NAME)
 
 const installListener = (event: ExtendableEvent) => {
     console.debug("sw received install event.")
@@ -18,25 +18,16 @@ const installListener = (event: ExtendableEvent) => {
 self.addEventListener("install", installListener as any)
 
 const fetchListener = (event: FetchEvent) => {
-    const url: string = event.request.url
-    console.debug("fetch", url)
     event.respondWith(
         caches.match(event.request)
             .then(response => {
-                if (response !== undefined) {
-                    console.debug("hit cache", url)
+                if (response === undefined) {
+                    return fetch(event.request).catch(() => new Response("Offline. Cache missed.", { status: 404 }))
+                } else {
                     return response
                 }
-                console.debug("missed cache", url)
-                return fetch(event.request).catch(() => {
-                    console.debug("Network request failed, offline mode")
-                    return new Response("Offline: Cache was not working.", { status: 404 })
-                })
             })
-            .catch(error => {
-                console.error("Error in fetch handler:", error)
-                return new Response("Error handling fetch request.", { status: 500 })
-            })
+            .catch(error => new Response(`Error handling fetch request: ${error}`, { status: 500 }))
     )
 }
 
