@@ -2,15 +2,12 @@ const CACHE_NAME = "ffm-cache-v1"
 
 console.log("sw", CACHE_NAME)
 
-// assets/asset-manifest.json > https://www.andremichelle.io/ffm/assets/assets/asset-manifest.json
-// ./asset-manifest.json > https://www.andremichelle.io/ffm/assets/asset-manifest.json
-
 const installListener = (event: ExtendableEvent) => {
     console.debug("sw received install event.")
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(async (cache: Cache) => cache
-                .addAll(await fetch("./asset-manifest.json")
+                .addAll(await fetch("./cache.json")
                     .then(x => x.json()) as Array<string>))
             .then(() => console.debug("caching completed."))
     )

@@ -7,6 +7,14 @@ export default defineConfig({
     optimizeDeps: {
         exclude: ["@ffmpeg/ffmpeg", "@ffmpeg/util"]
     },
+    build: {
+        outDir: "dist",
+        rollupOptions: {
+            external: (source) => {
+                return source.includes("service-worker.ts")
+            }
+        }
+    },
     server: {
         hmr: false,
         port: 8081,
