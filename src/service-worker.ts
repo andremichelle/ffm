@@ -18,15 +18,25 @@ const installListener = (event: ExtendableEvent) => {
 self.addEventListener("install", installListener as any)
 
 const fetchListener = (event: FetchEvent) => {
-    console.debug("fetch", event.request.url)
+    const url: string = event.request.url
+    console.debug("fetch", url)
     event.respondWith(
         caches.match(event.request)
             .then(response => {
-                if (response) {
-                    console.debug("hit cache", event.request.url)
+                if (response !== undefined) {
+                    console.debug("hit cache", url)
                     return response
                 }
-                console.debug("missed cache", event.request.url)
+                if (event.request.url.endsWith("/favicon.ico")) {
+                    return caches.match("/ffm/favicon.ico").then((faviconResponse) => {
+                        if (faviconResponse) {
+                            return faviconResponse
+                        } else {
+                            return new Response("Favicon not found in cache.", { status: 404 })
+                        }
+                    })
+                }
+                console.debug("missed cache", url)
                 return fetch(event.request).catch(() => {
                     console.debug("Network request failed, offline mode")
                     return new Response("Offline: Cache was not working.", { status: 200 })
