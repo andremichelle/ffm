@@ -35,7 +35,7 @@ const fetchListener = (event: FetchEvent) => {
                                 console.debug("favicon found")
                                 return faviconResponse
                             } else {
-                                console.debug("favicon found")
+                                console.debug("favicon not found")
                                 return new Response("Favicon not found in cache.", { status: 404 })
                             }
                         })
@@ -43,7 +43,7 @@ const fetchListener = (event: FetchEvent) => {
                 console.debug("missed cache", url)
                 return fetch(event.request).catch(() => {
                     console.debug("Network request failed, offline mode")
-                    return new Response("Offline: Cache was not working.", { status: 200 })
+                    return new Response("Offline: Cache was not working.", { status: 404 })
                 })
             })
             .catch(error => {
