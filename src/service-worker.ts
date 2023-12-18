@@ -18,19 +18,23 @@ const installListener = (event: ExtendableEvent) => {
 self.addEventListener("install", installListener as any)
 
 const fetchListener = (event: FetchEvent) => {
-    console.debug("fetch", event.request.url)
+    const newUrl = new URL(event.request.url)
+    newUrl.pathname = `/ffm${newUrl.pathname}`
+
+    const isSubdirectoryResource = event.request.url.startsWith(self.location.origin + "/ffm/")
+
+    console.debug("fetch", newUrl.toString(), `isSubdirectoryResource: ${isSubdirectoryResource}`)
+
     event.respondWith(
-        caches.match(event.request)
+        caches.match(isSubdirectoryResource ? new Request(newUrl) : event.request)
             .then(response => {
                 if (response) {
-                    console.debug("hit cache", event.request.url)
+                    console.debug("hit cache", newUrl.toString())
                     return response
                 }
-                console.debug("missed cache", event.request.url)
-                return fetch(event.request).catch(() => {
-                    console.debug("Network request failed, offline mode")
-                    return new Response("Offline: Cache was not working.", { status: 200 })
-                })
+                console.debug("missed cache", newUrl.toString())
+                return fetch(isSubdirectoryResource ? new Request(newUrl) : event.request)
+                    .catch(() => new Response("Offline: Cache was not working.", { status: 200 }))
             })
             .catch(error => {
                 console.error("Error in fetch handler:", error)
