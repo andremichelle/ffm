@@ -18,9 +18,9 @@ jobs:
           npm install
           npm run build
 
-      - name: Generate Manifest
+      - name: Run post build
         run: |
-          bun ./build/generate-manifest.ts
+          bun ./build/post-build.ts
 
 #      - name: Abort Workflow
 #        run: exit 1
