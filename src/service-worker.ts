@@ -21,17 +21,20 @@ const fetchListener = (event: FetchEvent) => {
     console.debug("fetch", event.request.url)
     event.respondWith(
         caches.match(event.request)
-            .catch(reason => {
-                console.debug("caught cache", event.request.url, reason)
-            })
             .then(response => {
-                if (response === undefined) {
-                    console.debug("missed cache", event.request.url)
-                    return fetch(event.request).catch(() => new Response("Cache was not working.", { status: 200 }))
-                } else {
+                if (response) {
                     console.debug("hit cache", event.request.url)
                     return response
                 }
+                console.debug("missed cache", event.request.url)
+                return fetch(event.request).catch(() => {
+                    console.debug("Network request failed, offline mode")
+                    return new Response("Offline: Cache was not working.", { status: 200 })
+                })
+            })
+            .catch(error => {
+                console.error("Error in fetch handler:", error)
+                return new Response("Error handling fetch request.", { status: 500 })
             })
     )
 }
