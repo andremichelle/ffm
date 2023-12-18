@@ -5,26 +5,34 @@ console.log("sw", CACHE_NAME)
 const installListener = (event: ExtendableEvent) => {
     console.debug("sw received install event.")
     event.waitUntil(
-        caches.open(CACHE_NAME)
+        caches
+            .open(CACHE_NAME)
             .then(async (cache: Cache) => cache
                 .addAll(await fetch("./cache.json")
                     .then(x => x.json()) as Array<string>))
             .then(() => console.debug("caching completed."))
+            .catch(reason => console.warn("caching failed", reason))
     )
 }
 
 self.addEventListener("install", installListener as any)
 
 const fetchListener = (event: FetchEvent) => {
+    console.debug("fetch", event.request.url)
     event.respondWith(
-        fetch(event.request)
-            .then(response => {
-                const cacheCopy = response.clone()
-                caches.open(CACHE_NAME).then(cache => cache.put(event.request, cacheCopy))
-                return response
+        caches.match(event.request)
+            .catch(reason => {
+                console.debug("caught cache", event.request.url, reason)
             })
-            .catch(() =>
-                caches.match(event.request).then(cachedResponse => cachedResponse || new Response("Fallback content", { status: 200 })))
+            .then(response => {
+                if (response === undefined) {
+                    console.debug("missed cache", event.request.url)
+                    return fetch(event.request).catch(() => new Response("Cache was not working.", { status: 200 }))
+                } else {
+                    console.debug("hit cache", event.request.url)
+                    return response
+                }
+            })
     )
 }
 
