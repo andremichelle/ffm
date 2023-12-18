@@ -9,6 +9,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     </React.StrictMode>
 )
 
+console.log(`PROD: ${import.meta.env.PROD}`)
+console.log(`NODE_ENV: ${import.meta.env.NODE_ENV}`)
+
 if (import.meta.env.PROD && "serviceWorker" in navigator) {
     console.debug("register ServiceWorker...")
     navigator.serviceWorker.register("./service-worker.js", { type: "module", scope: "/ffm/" })

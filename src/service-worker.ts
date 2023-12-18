@@ -27,19 +27,6 @@ const fetchListener = (event: FetchEvent) => {
                     console.debug("hit cache", url)
                     return response
                 }
-                if (event.request.url.endsWith("/favicon.ico")) {
-                    console.debug("favicon")
-                    return caches.match("/ffm/favicon.ico")
-                        .then((faviconResponse) => {
-                            if (faviconResponse) {
-                                console.debug("favicon found")
-                                return faviconResponse
-                            } else {
-                                console.debug("favicon not found")
-                                return new Response("Favicon not found in cache.", { status: 404 })
-                            }
-                        })
-                }
                 console.debug("missed cache", url)
                 return fetch(event.request).catch(() => {
                     console.debug("Network request failed, offline mode")
