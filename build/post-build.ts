@@ -22,7 +22,7 @@ const excludes = [".DS_Store", ".htaccess"]
 ;(async () => {
     const files = await collectFiles(targetDir)
     const data = JSON.stringify(files.filter(file => !excludes.some(exclude => file.endsWith(exclude))
-        && !file.includes("service-worker")).map(x => `/ffm/${x}`))
+        && !file.includes("service-worker")))
     await writeFile("./dist/cache.json", data)
     console.debug("cache files...")
     console.debug(data)
