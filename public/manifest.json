@@ -1,9 +1,10 @@
 {
+  "id": "/ffm/",
   "name": "FFM",
   "short_name": "FFM",
   "theme_color": "#fff",
   "background_color": "#fff",
-  "display": "browser",
+  "display": "standalone",
   "orientation": "portrait",
   "start_url": "https://www.andremichelle.io/ffm/",
   "icons": [
