@@ -34,10 +34,12 @@ export const ConversionResult = ({ fileNameWithExtension, state }: ConversationR
                                      onClick={() => asDefined(infoRef.current).classList.toggle("hidden")}>
                                     {fileNameWithExtension}
                                 </div>
-                                <audio controls src={objectURL}
+                                <audio controls
                                        onPlay={() => nameRef.current?.classList.add("playing")}
                                        onPause={() => nameRef.current?.classList.remove("playing")}
-                                ></audio>
+                                >
+                                    <source src={objectURL} type="audio/wav" />
+                                </audio>
                                 <a href={objectURL} download={`${fileName}.wav`}
                                    onClick={event => event.stopPropagation()}>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
