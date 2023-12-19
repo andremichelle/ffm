@@ -34,7 +34,7 @@ export const ConversionResult = ({ fileNameWithExtension, state }: ConversationR
                                      onClick={() => asDefined(infoRef.current).classList.toggle("hidden")}>
                                     {fileNameWithExtension}
                                 </div>
-                                <audio controls src={objectURL}
+                                <audio controls src={objectURL} preload="auto"
                                        onPlay={() => nameRef.current?.classList.add("playing")}
                                        onPause={() => nameRef.current?.classList.remove("playing")}
                                 ></audio>
