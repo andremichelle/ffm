@@ -11,14 +11,18 @@ type ConversationResultProps = {
 export const ConversionResult = ({ fileNameWithExtension, state }: ConversationResultProps) => {
     const nameRef = useRef<HTMLDivElement>(null)
     const infoRef = useRef<HTMLDivElement>(null)
-    const [objectURL, setObjectURL] = useState("")
+    // For Firefox it is important to use undefined and not an empty string.
+    // An empty string renders the audio object invalid and does not allow new src values, even if valid.
+    const [objectURL, setObjectURL] = useState<string | undefined>(undefined)
     useEffect(() => {
         if (state.status === "fulfilled") {
             setObjectURL(URL.createObjectURL(state.value.file_data))
         }
         return () => {
-            URL.revokeObjectURL(objectURL)
-            setObjectURL("")
+            if (objectURL !== undefined) {
+                URL.revokeObjectURL(objectURL)
+            }
+            setObjectURL(undefined)
         }
     }, [])
     return (
@@ -37,6 +41,7 @@ export const ConversionResult = ({ fileNameWithExtension, state }: ConversationR
                                 <audio controls src={objectURL} preload="auto"
                                        onPlay={() => nameRef.current?.classList.add("playing")}
                                        onPause={() => nameRef.current?.classList.remove("playing")}
+                                       onError={event => console.warn("onError", event)}
                                 ></audio>
                                 <a href={objectURL} download={`${fileName}.wav`}
                                    onClick={event => event.stopPropagation()}>
