@@ -5,8 +5,7 @@
   "background_color": "#fff",
   "display": "browser",
   "orientation": "portrait",
-  "scope": "/",
-  "start_url": "/",
+  "start_url": "https://andremichelle.io/ffm",
   "icons": [
     {
       "src": "images/icons/icon-72x72.png",
