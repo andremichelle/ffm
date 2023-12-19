@@ -18,3 +18,7 @@ if (import.meta.env.PROD && "serviceWorker" in navigator) {
                 console.debug("ServiceWorker registration successful with scope: ", registration.scope),
             err => console.warn("ServiceWorker registration failed: ", err))
 }
+
+self.addEventListener("beforeinstallprompt", (event: Event) => {
+    console.debug(event)
+})
