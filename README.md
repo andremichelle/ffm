@@ -9,4 +9,4 @@ Most heavy lifting has been done by [ffmpeg.wasm](https://github.com/ffmpegwasm/
 
 Tested on Macbook Chrome, Safari, Firefox and Safari IOS
 
-This app runs when offline (service worker cache)
+This app is registered as a [PWA](https://web.dev/explore/progressive-web-apps), hence being capable of running offline.
