@@ -102,7 +102,7 @@ const App = () => {
                 <span>andre.michelle[guess what]gmail.com</span>
                 <span>powered by <a href="https://github.com/ffmpegwasm/" target="ffmpegwasm">ffmpegwasm</a></span>
                 <span><a href="https://github.com/andremichelle/ffm/" target="ffmpegwasm">github repro</a></span>
-                <span>v0.26</span>
+                <span>v0.27</span>
             </footer>
         </div>)
 }

@@ -1,7 +1,7 @@
 # FFM Audio2Wav
 
 A simple React project to convert any media files to wav if audio is available.
-Most heavy lifting is been done by [ffmpeg.wasm](https://github.com/ffmpegwasm/).
+Most heavy lifting has been done by [ffmpeg.wasm](https://github.com/ffmpegwasm/).
 
 ![alt screenshot](snapshot.png)
 
